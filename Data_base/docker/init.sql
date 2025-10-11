@@ -70,19 +70,15 @@ BEFORE UPDATE ON apply
 FOR EACH ROW
 EXECUTE FUNCTION update_modified_column();
 
-INSERT INTO hr (first_name, last_name, email, phone) VALUES
-    ('ธีรพงศ์', 'พูนขวัญ', 'mofudon@gmail.com', '0922561234', '321', 'hr'),
-    ('ธีรพงศ์', 'รวงสา', 'nnnn@gmail.com', '0251234567', '654', 'hr'),
-    ('นัถกมน', 'พิริยะธนรัต', 'monnie@gmail.com', '032123578', '987', 'hr');
-
-INSERT INTO applicants (first_name, last_name, email, phone) VALUES
-    ('สมชาย', 'รวยน้อย', 'somchai@gmail.com', '0922145624'),
-    ('สมหญิง', 'รวยมาก', 'somyain@gmail.com', '0957464567');
+INSERT INTO applicants (first_name, last_name, age, email, phone, password, role) VALUES
+    ('สมชาย', 'รวยน้อย', 20, 'somchai@gmail.com', '0922145624', '123', 'applicant'),
+    ('สมหญิง', 'รวยมาก', 25, 'somyain@gmail.com', '0957464567', '456', 'applicant');
 
 INSERT INTO apply (position, file, stage) VALUES
-    ('พนักงานล้างรถ', decode('U29tZSBkYXRh', 'base64'), 'รอพิจารณา', '123', 'applicant'),
-    ('พนักงานล้างรถ', decode('U29tZSBvdGhlciBkYXRh', 'base64'), 'รอพิจารณา', '456', 'applicant');
+    ('พนักงานล้างรถ', decode('U29tZSBkYXRh', 'base64'), 'รอพิจารณา'),
+    ('พนักงานล้างรถ', decode('U29tZSBvdGhlciBkYXRh', 'base64'), 'รอพิจารณา');
 
 INSERT INTO schedule (first_name, last_name, time_s) VALUES
     ('สมชาย', 'รวยน้อย', '10:00'),
     ('สมหญิง', 'รวยมาก', '11:30');
+
