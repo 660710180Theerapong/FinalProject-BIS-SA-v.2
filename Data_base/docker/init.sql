@@ -4,8 +4,11 @@ CREATE TABLE applicants (
     first_name      VARCHAR(255) NOT NULL,
     last_name       VARCHAR(255),
     age             int NOT NULL,
-    email           VARCHAR(50) NOT NULL,
+    email           VARCHAR(255) NOT NULL,
     phone           VARCHAR(10) NOT NULL,
+    password        VARCHAR(255) NOT NULL,
+    role            VARCHAR(10) NOT NULL,
+    isLogin         BOOLEAN DEFAULT FALSE,
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -27,8 +30,11 @@ CREATE TABLE hr (
     hr_id           SERIAL PRIMARY KEY,
     first_name      VARCHAR(255) NOT NULL,
     last_name       VARCHAR(255),
-    email           VARCHAR(50) NOT NULL,
+    email           VARCHAR(255) NOT NULL,
     phone           VARCHAR(10) NOT NULL,
+    password        VARCHAR(255) NOT NULL,
+    role            VARCHAR(10) NOT NULL,
+    isLogin         BOOLEAN DEFAULT FALSE,
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -65,17 +71,17 @@ FOR EACH ROW
 EXECUTE FUNCTION update_modified_column();
 
 INSERT INTO hr (first_name, last_name, email, phone) VALUES
-    ('ธีรพงศ์', 'พูนขวัญ', 'mofudon@gmail.com', '0922561234'),
-    ('ธีรพงศ์', 'รวงสา', 'nnnn@gmail.com', '0251234567'),
-    ('นัถกมน', 'พิริยะธนรัต', 'monnie@gmail.com', '032123578');
+    ('ธีรพงศ์', 'พูนขวัญ', 'mofudon@gmail.com', '0922561234', '321', 'hr'),
+    ('ธีรพงศ์', 'รวงสา', 'nnnn@gmail.com', '0251234567', '654', 'hr'),
+    ('นัถกมน', 'พิริยะธนรัต', 'monnie@gmail.com', '032123578', '987', 'hr');
 
 INSERT INTO applicants (first_name, last_name, email, phone) VALUES
     ('สมชาย', 'รวยน้อย', 'somchai@gmail.com', '0922145624'),
     ('สมหญิง', 'รวยมาก', 'somyain@gmail.com', '0957464567');
 
 INSERT INTO apply (position, file, stage) VALUES
-    ('พนักงานล้างรถ', decode('U29tZSBkYXRh', 'base64'), 'รอพิจารณา'),
-    ('พนักงานล้างรถ', decode('U29tZSBvdGhlciBkYXRh', 'base64'), 'รอพิจารณา');
+    ('พนักงานล้างรถ', decode('U29tZSBkYXRh', 'base64'), 'รอพิจารณา', '123', 'applicant'),
+    ('พนักงานล้างรถ', decode('U29tZSBvdGhlciBkYXRh', 'base64'), 'รอพิจารณา', '456', 'applicant');
 
 INSERT INTO schedule (first_name, last_name, time_s) VALUES
     ('สมชาย', 'รวยน้อย', '10:00'),
