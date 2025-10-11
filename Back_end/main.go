@@ -12,7 +12,7 @@ import(
 )
 
 type Applicant struct {
-	ApplicantID int       	`json:"apply_id"`
+	ApplicantID int       	`json:"applicant_id"`
 	FirstName 	string    	`json:"first_name"`
 	LastName    string    	`json:"last_name"`
 	EMAIL      	string    	`json:"email"`
@@ -97,7 +97,7 @@ func getAllApplicants(c *gin.Context) {
     var applicants []Applicant
     for rows.Next() {
         var applicant Applicant
-        err := rows.Scan(&applicant.ApplicantID, &applicant.FirstName, &applicant.LastName, &applicant.EMAIL, &applicant.PHONE, &applicant.CreatedAt, &applicant.UpdatedAt)
+        err := rows.Scan(&applicant.ApplicantID, &applicant.FirstName, &applicant.LastName, &applicant.EMAIL, &applicant.PHONE, &applicant.CreatedAt)
         if err != nil {
         }
         applicants = append(applicants, applicant)
@@ -357,7 +357,7 @@ func main(){
 	{
 		api.GET("/applicants", getAllApplicants)
 	 	api.GET("/applicants/:id", getApplicant)
-	 	api.POST("/applicants", createApplicant)
+	 	api.POST("/applicant", createApplicant)
 	 	api.PUT("/applicants/:id", updateApplicant)
 	 	api.DELETE("/applicants/:id", deleteApplicant)
 

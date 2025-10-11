@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, NavLink } from 'react-router-dom';
+import Api_test from "../components/Api_test";
 
 function HomePage_NotLog() {
   return (
@@ -27,6 +28,9 @@ function HomePage_NotLog() {
             <tr className="font-semibold bg-blue-200">
               <td className="py-3 border">รวม</td>
               <td className="py-3 border">12</td>
+            </tr>
+            <tr>
+              <Api_test/>
             </tr>
           </tbody>
         </table>
