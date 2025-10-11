@@ -18,7 +18,8 @@ import NotificationPage from './pages/User/Notification_Page';
 import HomePage_Hr_page from './pages/Hr/Home_Hr_page';
 import ApplicantList_Page from './pages/Hr/ApplicantList_Page'
 import ManageApplicant_Page from './pages/Hr/ManageApplicant_Page';
-
+import Document_Page from './pages/Hr/Document_Page';
+import Repor_Page from './pages/Hr/Report_Page';
 
 function App() {
 
@@ -59,7 +60,8 @@ function App() {
             <Route path="/hr" element={<HomePage_Hr_page />} />
             <Route path="/hr/applicant" element={<ApplicantList_Page />} />
             <Route path="/manage/:id" element={<ManageApplicant_Page />} />
-            
+            <Route path="/hr/document" element={<Document_Page/>} />
+            <Route path="/hr/report" element={<Repor_Page/>} />
           </Routes>
         </main>
       </div>
