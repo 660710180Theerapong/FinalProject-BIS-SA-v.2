@@ -2,12 +2,14 @@ import React from "react";
 
 const Status_Page = ({ position, status }) => {
   // กำหนดขั้นตอน
+  
   const steps = [
     { id: 1, label: "ยื่นใบสมัคร", message: "ยื่นใบสมัครเรียบร้อย" },
     { id: 2, label: "รอตรวจสอบ", message: "กำลังตรวจสอบเอกสาร" },
     { id: 3, label: "นัดสัมภาษณ์", message: "รอนัดสัมภาษณ์" },
     { id: 4, label: "ผลการสมัคร", message: "ผ่าน" },
   ];
+
 
   // หาว่าตอนนี้อยู่ขั้นไหน
   const currentStep = steps.find((s) => s.label === status) || steps[2];
