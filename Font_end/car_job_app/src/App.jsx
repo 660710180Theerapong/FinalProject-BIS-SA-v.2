@@ -8,19 +8,23 @@ import Navbar from './components/Navbar';
 //Page
 import Login_Page from './pages/Login_Page';
 import Register_Page from './pages/Register_Page';
+import HomePage_NotLog from './pages/HomePage_NotLog';
+//user
+import HomePage from './pages/User/HomePage';
 import Profile_Page from './pages/User/Profile_Page';
 import Status_Page from './pages/User/Status_Page';
-import HomePage from './pages/User/HomePage';
-import HomePage_NotLog from './pages/HomePage_NotLog';
 import NotificationPage from './pages/User/Notification_Page';
-import HomePage_Hr_page from './pages/Home_Hr_page';
+//hr
+import HomePage_Hr_page from './pages/Hr/Home_Hr_page';
+import ApplicantList_Page from './pages/Hr/ApplicantList_Page'
+import ManageApplicant_Page from './pages/Hr/ManageApplicant_Page';
 
 
 function App() {
 
   const auth = {
-    isLoggedIn: false,
-    role: 'user', // 'user' หรือ 'hr'
+    isLoggedIn: true,
+    role: 'hr', // 'user' หรือ 'hr'
   };
   
 
@@ -53,6 +57,8 @@ function App() {
             <Route path="/user/notification" element={<NotificationPage />} />
 
             <Route path="/hr" element={<HomePage_Hr_page />} />
+            <Route path="/hr/applicant" element={<ApplicantList_Page />} />
+            <Route path="/manage/:id" element={<ManageApplicant_Page />} />
             
           </Routes>
         </main>

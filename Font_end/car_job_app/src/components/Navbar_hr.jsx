@@ -17,7 +17,7 @@ const Navbar_user = () => {
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center space-x-8">
             <NavLink 
-              to="/" 
+              to="/hr" 
               className={({ isActive }) => 
                 `text-white hover:text-gray-200 transition-colors font-medium ${
                   isActive ? 'text-viridian-600 border-b-2 border-viridian-600' : ''
@@ -27,7 +27,7 @@ const Navbar_user = () => {
               หน้าแรก
             </NavLink>
             <NavLink 
-              to="/manage" 
+              to="/hr/applicant" 
               className={({ isActive }) => 
                 `text-white hover:text-gray-200 transition-colors font-medium ${
                   isActive ? 'text-viridian-600 border-b-2 border-viridian-600' : ''
@@ -37,7 +37,7 @@ const Navbar_user = () => {
               จัดการผู้สมัคร
             </NavLink>
             <NavLink 
-              to="/document" 
+              to="/hr/document" 
               className={({ isActive }) => 
                 `text-white hover:text-gray-200 transition-colors font-medium ${
                   isActive ? 'text-viridian-600 border-b-2 border-viridian-600' : ''
@@ -47,7 +47,7 @@ const Navbar_user = () => {
               คลังเอกสาร
             </NavLink>
             <NavLink 
-              to="/report" 
+              to="/hr/report" 
               className={({ isActive }) => 
                 `text-white hover:text-gray-200 transition-colors font-medium ${
                   isActive ? 'text-viridian-600 border-b-2 border-viridian-600' : ''
