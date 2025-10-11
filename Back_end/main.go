@@ -106,7 +106,7 @@ func getAllApplicants(c *gin.Context) {
     var applicants []Applicant
     for rows.Next() {
         var applicant Applicant
-        err := rows.Scan(&applicant.ApplicantID, &applicant.FirstName, &applicant.LastName, &applicant.age, &applicant.EMAIL, &applicant.PHONE, &applicant.CreatedAt)
+        err := rows.Scan(&applicant.ApplicantID, &applicant.FirstName, &applicant.LastName, &applicant.Age, &applicant.EMAIL, &applicant.PHONE, &applicant.CreatedAt)
         if err != nil {
         }
         applicants = append(applicants, applicant)
@@ -182,7 +182,7 @@ func updateApplicant(c *gin.Context) {
          SET first_name = $1, last_name = $2, age =$3, email = $4, phone = $5
          WHERE id = $6
          RETURNING ID,updated_at`,
-        updateApplicant.FirstName, updateApplicant.LastName, updateApplicant.age, updateApplicant.EMAIL,
+        updateApplicant.FirstName, updateApplicant.LastName, updateApplicant.Age, updateApplicant.EMAIL,
         updateApplicant.PHONE, id,
     ).Scan(&ID, &updateApplicant)
 
@@ -225,9 +225,9 @@ func deleteApplicant(c *gin.Context) {
 
 func getAllApply(c *gin.Context) {
     var rows *sql.Rows
-    var err Error
+    var err error
 
-    rows, err = db.Query("SELECT apply_id, position, file, stage, applicant_id, created_at, FROM apply")
+    rows, err = db.Query("SELECT apply_id, position, file, stage, applicant_id, created_at FROM apply")
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
@@ -237,7 +237,7 @@ func getAllApply(c *gin.Context) {
     var applies []Apply
     for rows.Next() {
         var apply Apply
-        err := rows.Scan(&apply.ApplyID, &apply.Position, &apply.File, &apply.ApplicantID, &apply.CreatedAt)
+        err := rows.Scan(&apply.ApplyID, &apply.Position, &apply.File,&apply.Stage, &apply.ApplicantID, &apply.CreatedAt)
         if err != nil {
         }
         applies = append(applies, apply)
