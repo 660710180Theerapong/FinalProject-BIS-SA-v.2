@@ -367,7 +367,7 @@ func main(){
 	 	api.PUT("/applicants/:id", updateApplicant)
 	 	api.DELETE("/applicants/:id", deleteApplicant)
 
-        api.GET("/apply", getAllApply)
+        api.GET("/applies", getAllApply)
 	 	api.GET("/apply/:id", getApply)
 	 	api.POST("/apply", createApply)
 	 	api.DELETE("/apply/:id", deleteApply)
