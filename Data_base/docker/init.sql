@@ -1,12 +1,13 @@
 -- Table 1: applicants
 CREATE TABLE applicants (
-    applicant_id SERIAL PRIMARY KEY,
-    first_name VARCHAR(255) NOT NULL,
-    last_name VARCHAR(255),
-    email VARCHAR(50) NOT NULL,
-    phone VARCHAR(10) NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    applicant_id    SERIAL PRIMARY KEY,
+    first_name      VARCHAR(255) NOT NULL,
+    last_name       VARCHAR(255),
+    age             int NOT NULL,
+    email           VARCHAR(50) NOT NULL,
+    phone           VARCHAR(10) NOT NULL,
+    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Table 2: apply
@@ -23,13 +24,13 @@ CREATE TABLE apply (
 
 -- Table 3: hr
 CREATE TABLE hr (
-    hr_id SERIAL PRIMARY KEY,
-    first_name VARCHAR(255) NOT NULL,
-    last_name VARCHAR(255),
-    email VARCHAR(50) NOT NULL,
-    phone VARCHAR(10) NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    hr_id           SERIAL PRIMARY KEY,
+    first_name      VARCHAR(255) NOT NULL,
+    last_name       VARCHAR(255),
+    email           VARCHAR(50) NOT NULL,
+    phone           VARCHAR(10) NOT NULL,
+    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Table 4: Schedule
