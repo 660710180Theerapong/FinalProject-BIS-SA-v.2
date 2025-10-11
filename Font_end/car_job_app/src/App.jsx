@@ -25,7 +25,7 @@ function App() {
 
   const auth = {
     isLoggedIn: true,
-    role: 'hr', // 'user' หรือ 'hr'
+    role: 'user', // 'user' หรือ 'hr'
   };
   
 

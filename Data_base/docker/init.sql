@@ -70,15 +70,27 @@ BEFORE UPDATE ON apply
 FOR EACH ROW
 EXECUTE FUNCTION update_modified_column();
 
-INSERT INTO applicants (first_name, last_name, age, email, phone, password, role) VALUES
-    ('สมชาย', 'รวยน้อย', 20, 'somchai@gmail.com', '0922145624', '123', 'applicant'),
-    ('สมหญิง', 'รวยมาก', 25, 'somyain@gmail.com', '0957464567', '456', 'applicant');
+-- ✅ INSERT HR
+INSERT INTO hr (first_name, last_name, email, phone, password, role)
+VALUES
+('ธีรพงศ์', 'พูนขวัญ', 'mofudon@gmail.com', '0922561234', '321', 'hr'),
+('ธีรพงศ์', 'รวงสา', 'nnnn@gmail.com', '0251234567', '654', 'hr'),
+('นัถกมน', 'พิริยะธนรัต', 'monnie@gmail.com', '032123578', '987', 'hr');
 
-INSERT INTO apply (position, file, stage) VALUES
-    ('พนักงานล้างรถ', decode('U29tZSBkYXRh', 'base64'), 'รอพิจารณา'),
-    ('พนักงานล้างรถ', decode('U29tZSBvdGhlciBkYXRh', 'base64'), 'รอพิจารณา');
+-- ✅ INSERT APPLICANTS
+INSERT INTO applicants (first_name, last_name, age, email, phone, password, role)
+VALUES
+('สมชาย', 'รวยน้อย', 30, 'somchai@gmail.com', '0922145624', '1234', 'applicant'),
+('สมหญิง', 'รวยมาก', 28, 'somying@gmail.com', '0957464567', '5678', 'applicant');
 
-INSERT INTO schedule (first_name, last_name, time_s) VALUES
-    ('สมชาย', 'รวยน้อย', '10:00'),
-    ('สมหญิง', 'รวยมาก', '11:30');
+-- ✅ INSERT APPLY
+INSERT INTO apply (position, file, stage, applicant_id)
+VALUES
+('พนักงานล้างรถ', decode('U29tZSBkYXRh', 'base64'), 'รอพิจารณา', 1),
+('พนักงานล้างรถ', decode('U29tZSBvdGhlciBkYXRh', 'base64'), 'รอพิจารณา', 2);
 
+-- ✅ INSERT SCHEDULE
+INSERT INTO schedule (first_name, last_name, time_s)
+VALUES
+('สมชาย', 'รวยน้อย', '10:00'),
+('สมหญิง', 'รวยมาก', '11:30');

@@ -1,5 +1,4 @@
 import React from "react";
-import { Link, NavLink } from 'react-router-dom';
 import Api_test from "../components/Api_test";
 
 function HomePage_NotLog() {
