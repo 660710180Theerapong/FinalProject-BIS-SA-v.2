@@ -17,7 +17,7 @@ const Navbar_user = () => {
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center space-x-8">
             <NavLink 
-              to="/user" 
+              to="/" 
               className={({ isActive }) => 
                 `text-white hover:text-gray-200 transition-colors font-medium ${
                   isActive ? 'text-viridian-600 border-b-2 border-viridian-600' : ''
@@ -27,40 +27,40 @@ const Navbar_user = () => {
               หน้าแรก
             </NavLink>
             <NavLink 
-              to="/user/status" 
+              to="/manage" 
               className={({ isActive }) => 
                 `text-white hover:text-gray-200 transition-colors font-medium ${
                   isActive ? 'text-viridian-600 border-b-2 border-viridian-600' : ''
                 }`
               }
             >
-              ตรวจสอบสถานะ
+              จัดการผู้สมัคร
             </NavLink>
             <NavLink 
-              to="/user/test" 
+              to="/document" 
               className={({ isActive }) => 
                 `text-white hover:text-gray-200 transition-colors font-medium ${
                   isActive ? 'text-viridian-600 border-b-2 border-viridian-600' : ''
                 }`
               }
             >
-              ทดสอบ
+              คลังเอกสาร
             </NavLink>
             <NavLink 
-              to="/user/notification" 
+              to="/report" 
               className={({ isActive }) => 
                 `text-white hover:text-gray-200 transition-colors font-medium ${
                   isActive ? 'text-viridian-600 border-b-2 border-viridian-600' : ''
                 }`
               }
             >
-              แจ้งเตือน
+              สร้างรายงาน
             </NavLink>
           </div>
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-4">
-            <NavLink to="/user/profile" >
+            <NavLink to="/profile" >
             <button className="p-2 text-white hover:text-gray-200 transition-colors"
                     onClick={() => setIsMenuOpen(false)}>
               <UserIcon className="h-6 w-6" />

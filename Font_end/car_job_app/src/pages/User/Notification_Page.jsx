@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import NotificationItem from "../components/NotificationItem";
+import NotificationItem from "../../components/NotificationItem";
 
 
   const NotificationPage = () => {
