@@ -1,6 +1,6 @@
 services:
   fontend:
-      build: ./job_app
+      build: ./car_job_app
       ports:
         - "3001:80"
       restart: unless-stopped
