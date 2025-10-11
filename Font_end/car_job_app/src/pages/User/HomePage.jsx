@@ -4,6 +4,7 @@ import { Link, NavLink } from 'react-router-dom';
 
 function HomePage() {
   return (
+    
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-sky-200 to-white flex flex-col items-center font-sans">
       
       <div className="mt-12 bg-white text-black rounded-xl shadow-2xl overflow-hidden w-[90%] max-w-xl">
