@@ -30,28 +30,15 @@ function HomePage_NotLog() {
             </tr>
           </tbody>
         </table>
+
+        {/* ✅ เพิ่มข้อความใต้ตาราง */}
+        <div className="text-center text-sm text-gray-700 mb-4">
+          <p>※ รับเฉพาะอายุระหว่าง <span className="font-semibold text-blue-800">18 - 40 ปี</span></p>
+          <p>※ พนักงานล้างรถ <span className="font-semibold text-blue-800">รับเฉพาะผู้ชาย</span></p>
+        </div>
       </div>
 
-      {/* ตารางผู้ล็อกอิน
-      <div className="mt-12 bg-white text-black rounded-xl shadow-2xl overflow-hidden w-[90%] max-w-xl">
-        <table className="w-full text-center border-collapse">
-          <thead className="bg-blue-300 text-gray-900">
-            <tr>
-              <th className="py-3 border">ลำดับ</th>
-              <th className="py-3 border">ชื่อ - นามสกุล</th>
-              <th className="py-3 border">เวลาล็อกอิน</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colSpan="3" className="py-6 text-gray-500 border">
-                ยังไม่มีข้อมูลผู้ล็อกอินในขณะนี้
-                <CallUser/>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div> */}
+      
 
       {/* โลโก้และข้อมูลร้าน */}
       <div className="text-center mt-16">
