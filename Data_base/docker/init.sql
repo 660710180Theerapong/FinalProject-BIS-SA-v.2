@@ -32,6 +32,16 @@ CREATE TABLE hr (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Table 4: Schedule
+CREATE TABLE schedule (
+    schedule_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255),
+    time_s VARCHAR(50) NOT NULL,
+    applicant_id SERIAL,
+    FOREIGN KEY (applicant_id) REFERENCES applicants(applicant_id) ON DELETE CASCADE
+);
+
 -- Function สำหรับ update updated_at
 CREATE OR REPLACE FUNCTION update_modified_column()
 RETURNS TRIGGER AS $$
@@ -65,3 +75,7 @@ INSERT INTO applicants (first_name, last_name, email, phone) VALUES
 INSERT INTO apply (position, file, stage) VALUES
     ('พนักงานล้างรถ', decode('U29tZSBkYXRh', 'base64'), 'รอพิจารณา'),
     ('พนักงานล้างรถ', decode('U29tZSBvdGhlciBkYXRh', 'base64'), 'รอพิจารณา');
+
+INSERT INTO schedule (first_name, last_name, time_s) VALUES
+    ('สมชาย', 'รวยน้อย', '10:00'),
+    ('สมหญิง', 'รวยมาก', '11:30');

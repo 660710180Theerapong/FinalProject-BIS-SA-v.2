@@ -14,7 +14,6 @@ const Api_test = () => {
           throw new Error('Network response was not ok');
         }
         const data = await response.json(); // แปลงข้อมูลเป็น JSON
-        console.log("Fetched data:", data);
 
         setData(data); // เก็บข้อมูลใน state
       } catch (error) {

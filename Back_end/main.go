@@ -41,6 +41,15 @@ type Hr struct {
 	UpdatedAt 	time.Time 	`json:"updated_at"`
 }
 
+type Schedule struct {
+	ScheduleId      int       	`json:"hr_id"`
+    FirstName 	    string    	`json:"first_name"`
+	LastName        string    	`json:"last_name"`
+    TimeS           time.Time 	`json:"time_s"`
+    ApplicantID     int         `json:"applicant_id"`
+}
+
+
 func getEnv(key, defaultValue string) string{
 	if value := os.Getenv(key); value != ""{
 		return value
@@ -111,8 +120,8 @@ func getAllApplicants(c *gin.Context) {
 
 func getAllApply(c *gin.Context) {
     var rows *sql.Rows
-    var err error
-    // ลูกค้าถาม "มีหนังสืออะไรบ้าง"
+    var err Error
+
     rows, err = db.Query("SELECT apply_id, position, file, stage, applicant_id, created_at, FROM apply")
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -139,7 +148,6 @@ func getApplicant(c *gin.Context) {
     id := c.Param("id")
     var applicant Applicant
 
-    // QueryRow ใช้เมื่อคาดว่าจะได้ผลลัพธ์ 0 หรือ 1 แถว
     err := db.QueryRow("SELECT applicant_id, first_name, last_name, email, phone FROM books WHERE id = $1", id).
         Scan(&applicant.ApplicantID, &applicant.FirstName, &applicant.LastName, &applicant.EMAIL, &applicant.PHONE)
 
@@ -158,7 +166,6 @@ func getHr(c *gin.Context) {
     id := c.Param("id")
     var hr Hr
 
-    // QueryRow ใช้เมื่อคาดว่าจะได้ผลลัพธ์ 0 หรือ 1 แถว
     err := db.QueryRow("SELECT hr_id, first_name, last_name, email, phone FROM books WHERE id = $1", id).
         Scan(&hr.HrID, &hr.FirstName, &hr.LastName, &hr.EMAIL, &hr.PHONE)
 
@@ -177,7 +184,6 @@ func getApply(c *gin.Context) {
     id := c.Param("id")
     var apply Apply
 
-    // QueryRow ใช้เมื่อคาดว่าจะได้ผลลัพธ์ 0 หรือ 1 แถว
     err := db.QueryRow("SELECT apply_id, position, file, stage, applicant_id, created_at FROM books WHERE id = $1", id).
         Scan(&apply.ApplyID, &apply.Position, &apply.File, &apply.Stage, &apply.ApplicantID, &apply.CreatedAt)
 
@@ -192,9 +198,6 @@ func getApply(c *gin.Context) {
     c.JSON(http.StatusOK, apply)
 }
 
-//@CrossOrigin(origins = "http://127.0.0.1")
-//@RestController
-//@RequestMapping("/api/v1")
 func createApplicant(c *gin.Context) {
     var newApplicant Applicant
 
@@ -203,7 +206,6 @@ func createApplicant(c *gin.Context) {
         return
     }
 
-    // ใช้ RETURNING เพื่อดึงค่าที่ database generate (id, timestamps)
     var id int
     var createdAt, updatedAt time.Time
 
