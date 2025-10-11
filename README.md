@@ -4,4 +4,4 @@
 
 **อ่านลืม git pull origin main ่ก่อนแก้ code นะ**
 
-Back_End port===> http://localhost:8080/health , http://http://127.0.0.1:8080/health
+Back_End port===> http://localhost:8080/health , http://127.0.0.1:8080/health
