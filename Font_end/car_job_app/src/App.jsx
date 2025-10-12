@@ -25,14 +25,17 @@ import Document_Page from './pages/Hr/Document_Page';
 import Report_Page from './pages/Hr/Report_Page';
 import Profile_hr_Page from './pages/Hr/Profile_hr_Page';
 
+import { useAuth } from './contexts/AuthContext'; // 👈 ย้อนขึ้นไปหา contexts
+
 // Mock auth
-const auth = {
-  isLoggedIn: true,
-  role: 'hr', // 'user' หรือ 'hr'
-};
+// const auth = {
+//   isLoggedIn: true,
+//   role: 'user', // 'user' หรือ 'hr'
+// };
 
 // ProtectedRoute component
 function ProtectedRoute({ children, role }) {
+  const { auth } = useAuth(); // 👉 ดึง auth จาก context
   if (!auth.isLoggedIn) {
     return <Navigate to="/login" />;
   }
@@ -43,6 +46,7 @@ function ProtectedRoute({ children, role }) {
 }
 
 function App() {
+  const { auth } = useAuth(); // 👉 ใช้ auth ที่แชร์จาก context
   return (
     <Router>
       <div className="min-h-screen flex flex-col">

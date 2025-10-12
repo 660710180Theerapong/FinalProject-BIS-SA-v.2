@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from '../contexts/AuthContext';
 
 const Login_Page = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,51 +16,62 @@ const Login_Page = () => {
     return form.email.trim() !== "" && form.password.trim() !== "";
   };
 
-  const handleSubmit = async (e) => {
-    console.log("submitted")
-    e.preventDefault();
-    setError('');
+  // ✅ ดึง setAuth จาก context
+    const { setAuth } = useAuth();
 
-    if (!isFormValid()) {
-      setError("กรุณากรอกข้อมูลให้ครบถ้วน");
+  const handleSubmit = async (e) => {
+  console.log("submitted");
+  e.preventDefault();
+  setError("");
+
+  if (!isFormValid()) {
+    setError("กรุณากรอกข้อมูลให้ครบถ้วน");
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:8080/api/v1/applicant/auth", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    });
+
+    if (!response.ok) {
+      setError("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
       return;
     }
 
-    try {
-      const response = await fetch("http://localhost:8080/api/v1/applicant/auth", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
+    const data = await response.json();
+    const role = data.role;
+    console.log("role:", role, data);
 
-      if (!response.ok) {
-        setError("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
-        return;
-      }
+    localStorage.setItem("userEmail", form.email);
 
-      const data = await response.json();
+    
 
-      const role = data.role
+    // ✅ อัปเดต context ด้วยข้อมูลที่ได้
+    setAuth({
+      isLoggedIn: true,
+      role: role,
+    });
 
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("userEmail", form.email);
-
-      // นำทางตาม role
-      if (role === "hr") {
-        navigate("/hr");
-      } else {
-        navigate("/user");
-      }
-
-    } catch (error) {
-      console.error("Login error:", error);
-      setError("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
+    // ✅ นำทางตาม role
+    if (role === "hr") {
+      navigate("/hr");
+    } else {
+      navigate("/user");
     }
 
-    console.log("ข้อมูลเข้าสู่ระบบ:", form);
-  };
+  } catch (error) {
+    console.error("Login error:", error);
+    setError("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
+  }
+
+  console.log("ข้อมูลเข้าสู่ระบบ:", form);
+};
+
 
 
   return (
