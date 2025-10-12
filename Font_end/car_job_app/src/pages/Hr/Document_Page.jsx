@@ -1,7 +1,9 @@
 // 📄 src/pages/Document_Page.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function Document_Page() {
+  const [documents, setDocuments] = useState([]);
+  const [selectedDoc, setSelectedDoc] = useState(null);
   const [filters, setFilters] = useState({
     date: "",
     docName: "",
@@ -9,51 +11,44 @@ export default function Document_Page() {
     firstName: "",
     lastName: "",
     position: "",
-    resume: null
   });
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [applicantRes, applyRes] = await Promise.all([
+          fetch("/api/v1/applicants"),
+          fetch("/api/v1/applies"),
+        ]);
 
-  // 📋 ข้อมูลตัวอย่าง (สามารถเชื่อม API จริงภายหลังได้)
-  const documents = [
-    {
-      date: "2025-05-20",
-      firstName: "นาย สมชาย",
-      lastName: "รวยน้อย",
-      docName: "เอกสารประกอบการสมัคร",
-      docType: "เอกสารประกอบการสมัคร",
-      position: "พนักงานล้างรถ",
-      resume: '/images/carwash/resume.jpg'
-    },
-    {
-      date: "2025-05-20",
-      firstName: "นางสาว สมหญิง",
-      lastName: "รวยมาก",
-      docName: "เอกสารประกอบการสมัคร",
-      docType: "เอกสารประกอบการสมัคร",
-      position: "พนักงานบริการ",
-      resume: '/images/carwash/resume.jpg'
-    },
-    {
-      date: "2025-05-11",
-      firstName: "นาย สมชาย",
-      lastName: "หมายสุข",
-      docName: "เอกสารประกอบการสมัคร",
-      docType: "เอกสารประกอบการสมัคร",
-      position: "พนักงานบริการ",
-      resume: '/images/carwash/resume.jpg'
-    },
-    {
-      date: "2025-05-10",
-      firstName: "นาย สมพงษ์",
-      lastName: "นามยุดา",
-      docName: "เอกสารประกอบการสมัคร",
-      docType: "เอกสารประกอบการสมัคร",
-      position: "พนักงานล้างรถ",
-      resume: '/images/carwash/resume.jpg'
-    },
-  ];
+        const applicants = await applicantRes.json();
+        const applies = await applyRes.json();
 
- const [selectedDoc, setSelectedDoc] = useState(null);
+        // 🔗 เชื่อมข้อมูลโดยใช้ applicant_id
+        const merged = applies.map((apply) => {
+          const applicant = applicants.find(
+            (a) => a.applicant_id === apply.applicant_id
+          );
+
+          return {
+            date: apply.created_at?.split("T")[0] || "", // ดึงแค่วันที่
+            firstName: applicant?.first_name || "ไม่ทราบชื่อ",
+            lastName: applicant?.last_name || "",
+            docName: "เอกสารประกอบการสมัคร",
+            docType: "เอกสารประกอบการสมัคร",
+            position: apply.position || "",
+            resume: apply.file || "/images/carwash/resume.jpg", // ลิงก์ไฟล์
+          };
+        });
+
+        setDocuments(merged);
+      } catch (err) {
+        console.error("❌ โหลดข้อมูลไม่สำเร็จ:", err);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // 📌 ฟังก์ชันเปลี่ยนค่าในฟอร์ม
   const handleChange = (e) => {
@@ -62,98 +57,39 @@ export default function Document_Page() {
 
   // 🔍 ฟังก์ชันกรองข้อมูล
   const filteredDocuments = documents.filter((doc) => {
-    const matchDate =
-      !filters.date || doc.date === filters.date; // ถ้าไม่ได้เลือกวันที่ให้ผ่านทั้งหมด
-    const matchDocName =
-      !filters.docName ||
-      doc.docName.toLowerCase().includes(filters.docName.toLowerCase());
-    const matchDocType =
-      !filters.docType ||
-      doc.docType.toLowerCase().includes(filters.docType.toLowerCase());
-    const matchFirstName =
-      !filters.firstName ||
-      doc.firstName.toLowerCase().includes(filters.firstName.toLowerCase());
-    const matchLastName =
-      !filters.lastName ||
-      doc.lastName.toLowerCase().includes(filters.lastName.toLowerCase());
-    const matchPosition =
-      !filters.position ||
-      doc.position.toLowerCase().includes(filters.position.toLowerCase());
+    const matchDate = !filters.date || doc.date === filters.date;
+    const matchDocName = !filters.docName || doc.docName.toLowerCase().includes(filters.docName.toLowerCase());
+    const matchDocType = !filters.docType || doc.docType.toLowerCase().includes(filters.docType.toLowerCase());
+    const matchFirstName = !filters.firstName || doc.firstName.toLowerCase().includes(filters.firstName.toLowerCase());
+    const matchLastName = !filters.lastName || doc.lastName.toLowerCase().includes(filters.lastName.toLowerCase());
+    const matchPosition = !filters.position || doc.position.toLowerCase().includes(filters.position.toLowerCase());
 
-    return (
-      matchDate &&
-      matchDocName &&
-      matchDocType &&
-      matchFirstName &&
-      matchLastName &&
-      matchPosition
-    );
+    return matchDate && matchDocName && matchDocType && matchFirstName && matchLastName && matchPosition;
   });
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-800 to-purple-600 text-white py-10 px-12">
       {/* 🔍 ฟอร์มกรองข้อมูล */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10 text-black">
-        <div>
-          <label className="text-white text-base">วัน/เดือน/ปี:</label>
-          <input
-            name="date"
-            type="date"
-            value={filters.date}
-            onChange={handleChange}
-            className="w-full rounded-lg p-2"
-          />
-        </div>
-        <div>
-          <label className="text-white text-base">ชื่อเอกสาร:</label>
-          <input
-            name="docName"
-            type="text"
-            value={filters.docName}
-            onChange={handleChange}
-            className="w-full rounded-lg p-2"
-          />
-        </div>
-        <div>
-          <label className="text-white text-base">ประเภทเอกสาร:</label>
-          <input
-            name="docType"
-            type="text"
-            value={filters.docType}
-            onChange={handleChange}
-            className="w-full rounded-lg p-2"
-          />
-        </div>
-        <div>
-          <label className="text-white text-base">ชื่อ:</label>
-          <input
-            name="firstName"
-            type="text"
-            value={filters.firstName}
-            onChange={handleChange}
-            className="w-full rounded-lg p-2"
-          />
-        </div>
-        <div>
-          <label className="text-white text-base">นามสกุล:</label>
-          <input
-            name="lastName"
-            type="text"
-            value={filters.lastName}
-            onChange={handleChange}
-            className="w-full rounded-lg p-2"
-          />
-        </div>
-        <div>
-          <label className="text-white text-base">ตำแหน่ง:</label>
-          <input
-            name="position"
-            type="text"
-            value={filters.position}
-            onChange={handleChange}
-            className="w-full rounded-lg p-2"
-          />
-        </div>
+        {[
+          { label: "วัน/เดือน/ปี:", name: "date", type: "date" },
+          { label: "ชื่อเอกสาร:", name: "docName", type: "text" },
+          { label: "ประเภทเอกสาร:", name: "docType", type: "text" },
+          { label: "ชื่อ:", name: "firstName", type: "text" },
+          { label: "นามสกุล:", name: "lastName", type: "text" },
+          { label: "ตำแหน่ง:", name: "position", type: "text" },
+        ].map(({ label, name, type }) => (
+          <div key={name}>
+            <label className="text-white text-base">{label}</label>
+            <input
+              name={name}
+              type={type}
+              value={filters[name]}
+              onChange={handleChange}
+              className="w-full rounded-lg p-2"
+            />
+          </div>
+        ))}
       </div>
 
       {/* 🧾 รายการเอกสาร */}
@@ -166,8 +102,7 @@ export default function Document_Page() {
               onClick={() => setSelectedDoc(doc)}
             >
               <p className="text-lg leading-relaxed">
-                {doc.date.split("-").reverse().join("-")}{" "}
-                เอกสารประกอบการสมัคร ชื่อ: {doc.firstName} {doc.lastName}{" "}
+                {doc.date.split("-").reverse().join("-")} เอกสารประกอบการสมัคร ชื่อ: {doc.firstName} {doc.lastName}{" "}
                 ประเภท: {doc.docType} ตำแหน่ง: {doc.position}
               </p>
             </div>
@@ -178,8 +113,9 @@ export default function Document_Page() {
           </p>
         )}
       </div>
-      
- {selectedDoc && (
+
+      {/* 📄 Modal แสดงไฟล์ */}
+      {selectedDoc && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
           <div className="bg-white text-black rounded-2xl p-6 max-w-lg w-11/12 relative">
             <button
@@ -191,10 +127,8 @@ export default function Document_Page() {
             <h2 className="text-xl font-bold mb-4">
               Resume ของ {selectedDoc.firstName} {selectedDoc.lastName}
             </h2>
-
-              {/* แสดงรูปภาพ */}
             <img
-              src={selectedDoc.resume}
+              src={'/images/carwash/resume.jpg'}
               alt={`Resume ของ ${selectedDoc.firstName}`}
               className="rounded-xl shadow-lg mx-auto max-h-[70vh] object-contain"
             />
