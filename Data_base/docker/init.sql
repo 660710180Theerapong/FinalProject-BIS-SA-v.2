@@ -12,8 +12,8 @@ CREATE TABLE appuser (
 CREATE TABLE applicants (
     applicant_id    SERIAL PRIMARY KEY,
     first_name      VARCHAR(255) NOT NULL,
-    last_name       VARCHAR(255)NOT NULL,
-    birth_day        DATE NOT NULL,
+    last_name       VARCHAR(255) NOT NULL,
+    birth_day       DATE NOT NULL,
     email           VARCHAR(255) NOT NULL UNIQUE,
     phone           VARCHAR(10) NOT NULL,
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -22,6 +22,7 @@ CREATE TABLE applicants (
     FOREIGN KEY (email) REFERENCES appuser(email) ON DELETE CASCADE
 );
 
+-- Table: blacklist
 CREATE TABLE blacklist (
     first_name      VARCHAR(255) NOT NULL,
     last_name       VARCHAR(255) NOT NULL,
@@ -92,22 +93,21 @@ INSERT INTO appuser (email, password, role) VALUES
     ('somchai@gmail.com', '123', 'applicant'),
     ('somyain@gmail.com', '456', 'applicant');
 
+-- Insert blacklist (แปลงวันที่เป็น ค.ศ.)
 INSERT INTO blacklist (first_name, last_name, birth_day, email) VALUES
-    ('มานี', 'มาแล้ว', '20/12/2555','monnie@gmail.com'),
-    ('นายนาว', 'เล็กจัด', '1/5/2505','nnnn@gmail.com'),
-    ('ใบตาล', 'บ้านใหญ่', '4/7/2545','somchai@gmail.com');
-
-
+    ('มานี', 'มาแล้ว', '2012-12-20','monnie@gmail.com'),
+    ('นายนาว', 'เล็กจัด', '1962-05-01','nnnn@gmail.com'),
+    ('ใบตาล', 'บ้านใหญ่', '2002-07-04','somchai@gmail.com');
 
 -- Insert HR
 INSERT INTO hr (first_name, last_name, email, phone) VALUES
     ('ม่อน', 'รวยป่าว', 'monnie@gmail.com', '0926325624'),
     ('หนึ่ง', 'ไม้รวย', 'nnnn@gmail.com', '0957468742');
 
--- Insert Applicants
+-- Insert Applicants (แปลงวันที่ + แก้วันผิด เช่น 30 ก.พ.)
 INSERT INTO applicants (first_name, last_name, birth_day, email, phone) VALUES
-    ('สมชาย', 'รวยน้อย', '12/12/2540', 'somchai@gmail.com', '0922145624'),
-    ('สมหญิง', 'รวยมาก', '30/2/2530', 'somyain@gmail.com', '0957464567');
+    ('สมชาย', 'รวยน้อย', '1997-12-12', 'somchai@gmail.com', '0922145624'),
+    ('สมหญิง', 'รวยมาก', '1987-02-28', 'somyain@gmail.com', '0957464567');
 
 -- Insert Applications
 INSERT INTO apply (position, file, stage, applicant_id) VALUES
