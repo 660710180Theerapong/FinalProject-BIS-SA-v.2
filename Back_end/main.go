@@ -7,6 +7,7 @@ import(
 	_ "github.com/lib/pq"
 	"log"
 	"github.com/gin-gonic/gin"
+    "github.com/gin-contrib/cors"
 	"net/http"
 	"time"
 )
@@ -343,12 +344,25 @@ func getHr(c *gin.Context) {
     c.JSON(http.StatusOK, hr)
 }
 
-
+// @title           Simple API Example
+// @version         1.0
+// @description     This is a simple example of using Gin with Swagger.
+// @host localhost:8080
+// @host 127.0.0.1:8080
+// @BasePath        /api/v1
 func main(){
 	initDB()
 	defer db.Close()
 
 	r := gin.Default()
+    r.Use(cors.New(cors.Config{
+        AllowOrigins:     []string{"http://127.0.0.1:3000", "http://localhost:3000"},
+        AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+        AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+        ExposeHeaders:    []string{"Content-Length"},
+        AllowCredentials: true,
+        MaxAge:           12 * time.Hour,
+    }))
 
 	r.GET("/health", func(c *gin.Context) {
 		err := db.Ping()

@@ -1,55 +1,71 @@
--- Table 1: applicants
-CREATE TABLE applicants (
-    applicant_id    SERIAL PRIMARY KEY,
-    first_name      VARCHAR(255) NOT NULL,
-    last_name       VARCHAR(255),
-    age             int NOT NULL,
-    email           VARCHAR(255) NOT NULL,
-    phone           VARCHAR(10) NOT NULL,
+-- Table: appuser
+CREATE TABLE appuser (
+    email           VARCHAR(255) NOT NULL PRIMARY KEY,
     password        VARCHAR(255) NOT NULL,
     role            VARCHAR(10) NOT NULL,
-    isLogin         BOOLEAN DEFAULT FALSE,
+    islogin         BOOLEAN DEFAULT FALSE,
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table 2: apply
+-- Table: applicants
+CREATE TABLE applicants (
+    applicant_id    SERIAL PRIMARY KEY,
+    first_name      VARCHAR(255) NOT NULL,
+    last_name       VARCHAR(255)NOT NULL,
+    birt_day        DATE NOT NULL,
+    email           VARCHAR(255) NOT NULL UNIQUE,
+    phone           VARCHAR(10) NOT NULL,
+    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (email) REFERENCES appuser(email) ON DELETE CASCADE
+);
+
+CREATE TABLE blacklist (
+    first_name      VARCHAR(255) NOT NULL,
+    last_name       VARCHAR(255) NOT NULL,
+    birth_day       DATE NOT NULL,
+    email           VARCHAR(255) NOT NULL UNIQUE,
+    PRIMARY KEY (first_name, last_name)
+);
+
+-- Table: apply
 CREATE TABLE apply (
     apply_id SERIAL PRIMARY KEY,
     position VARCHAR(100) NOT NULL,
     file BYTEA,
     stage VARCHAR(50),
-    applicant_id SERIAL,
+    applicant_id INT NOT NULL,
     FOREIGN KEY (applicant_id) REFERENCES applicants(applicant_id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table 3: hr
+-- Table: hr
 CREATE TABLE hr (
     hr_id           SERIAL PRIMARY KEY,
     first_name      VARCHAR(255) NOT NULL,
     last_name       VARCHAR(255),
-    email           VARCHAR(255) NOT NULL,
+    email           VARCHAR(255) NOT NULL UNIQUE,
     phone           VARCHAR(10) NOT NULL,
-    password        VARCHAR(255) NOT NULL,
-    role            VARCHAR(10) NOT NULL,
-    isLogin         BOOLEAN DEFAULT FALSE,
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (email) REFERENCES appuser(email) ON DELETE CASCADE
 );
 
--- Table 4: Schedule
+-- Table: schedule
 CREATE TABLE schedule (
     schedule_id SERIAL PRIMARY KEY,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255),
     time_s VARCHAR(50) NOT NULL,
-    applicant_id SERIAL,
+    applicant_id INT NOT NULL,
     FOREIGN KEY (applicant_id) REFERENCES applicants(applicant_id) ON DELETE CASCADE
 );
 
--- Function สำหรับ update updated_at
+-- Trigger function
 CREATE OR REPLACE FUNCTION update_modified_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -58,39 +74,47 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- Trigger สำหรับ applicants
+-- Triggers
 CREATE TRIGGER update_applicants_modtime
 BEFORE UPDATE ON applicants
 FOR EACH ROW
 EXECUTE FUNCTION update_modified_column();
 
--- Trigger สำหรับ apply
 CREATE TRIGGER update_apply_modtime
 BEFORE UPDATE ON apply
 FOR EACH ROW
 EXECUTE FUNCTION update_modified_column();
 
--- ✅ INSERT HR
-INSERT INTO hr (first_name, last_name, email, phone, password, role)
-VALUES
-('ธีรพงศ์', 'พูนขวัญ', 'mofudon@gmail.com', '0922561234', '321', 'hr'),
-('ธีรพงศ์', 'รวงสา', 'nnnn@gmail.com', '0251234567', '654', 'hr'),
-('นัถกมน', 'พิริยะธนรัต', 'monnie@gmail.com', '032123578', '987', 'hr');
+-- Insert appusers
+INSERT INTO appuser (email, password, role) VALUES
+    ('monnie@gmail.com', '321', 'hr'),
+    ('nnnn@gmail.com', '654', 'hr'),
+    ('somchai@gmail.com', '123', 'applicant'),
+    ('somyain@gmail.com', '456', 'applicant');
 
--- ✅ INSERT APPLICANTS
-INSERT INTO applicants (first_name, last_name, age, email, phone, password, role)
-VALUES
-('สมชาย', 'รวยน้อย', 30, 'somchai@gmail.com', '0922145624', '1234', 'applicant'),
-('สมหญิง', 'รวยมาก', 28, 'somying@gmail.com', '0957464567', '5678', 'applicant');
+INSERT INTO blacklist (first_name, last_name, birt_day, email) VALUES
+    ('มานี', 'มาแล้ว', '20/12/2555','monnie@gmail.com'),
+    ('นายนาว', 'เล็กจัด', '1/5/2505','nnnn@gmail.com'),
+    ('ใบตาล', 'บ้านใหญ่', '4/7/2545','somchai@gmail.com');
 
--- ✅ INSERT APPLY
-INSERT INTO apply (position, file, stage, applicant_id)
-VALUES
-('พนักงานล้างรถ', decode('U29tZSBkYXRh', 'base64'), 'รอพิจารณา', 1),
-('พนักงานล้างรถ', decode('U29tZSBvdGhlciBkYXRh', 'base64'), 'รอพิจารณา', 2);
 
--- ✅ INSERT SCHEDULE
-INSERT INTO schedule (first_name, last_name, time_s)
-VALUES
-('สมชาย', 'รวยน้อย', '10:00'),
-('สมหญิง', 'รวยมาก', '11:30');
+
+-- Insert HR
+INSERT INTO hr (first_name, last_name, email, phone) VALUES
+    ('ม่อน', 'รวยป่าว', 'monnie@gmail.com', '0926325624'),
+    ('หนึ่ง', 'ไม้รวย', 'nnnn@gmail.com', '0957468742');
+
+-- Insert Applicants
+INSERT INTO applicants (first_name, last_name, birt_day, email, phone) VALUES
+    ('สมชาย', 'รวยน้อย', '12/12/2540', 'somchai@gmail.com', '0922145624'),
+    ('สมหญิง', 'รวยมาก', '30/2/2530', 'somyain@gmail.com', '0957464567');
+
+-- Insert Applications
+INSERT INTO apply (position, file, stage, applicant_id) VALUES
+    ('พนักงานล้างรถ', decode('U29tZSBkYXRh', 'base64'), 'รอพิจารณา', 1),
+    ('พนักงานล้างรถ', decode('U29tZSBvdGhlciBkYXRh', 'base64'), 'รอพิจารณา', 2);
+
+-- Insert Schedule
+INSERT INTO schedule (first_name, last_name, time_s, applicant_id) VALUES
+    ('สมชาย', 'รวยน้อย', '10:00', 1),
+    ('สมหญิง', 'รวยมาก', '11:30', 2);
