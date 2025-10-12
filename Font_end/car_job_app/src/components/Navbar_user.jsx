@@ -36,16 +36,14 @@ const Navbar_user = () => {
             >
               ตรวจสอบสถานะ
             </NavLink>
-            <NavLink 
-              to="/user/test" 
-              className={({ isActive }) => 
-                `text-white hover:text-gray-200 transition-colors font-medium ${
-                  isActive ? 'text-viridian-600 border-b-2 border-viridian-600' : ''
-                }`
-              }
+            <a
+              href="https://forms.gle/wmnEfp53B2jWsaaCA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="form-link text-white hover:text-gray-200 transition-colors font-medium"
             >
               ทดสอบ
-            </NavLink>
+            </a>
             <NavLink 
               to="/user/notification" 
               className={({ isActive }) => 

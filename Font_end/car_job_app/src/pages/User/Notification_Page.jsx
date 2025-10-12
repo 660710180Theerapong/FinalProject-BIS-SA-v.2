@@ -46,7 +46,7 @@ import NotificationItem from "../../components/NotificationItem";
     };
   
     return (
-      <div className="min-h-screen bg-gradient-to-b from-purple-900 to-purple-700 flex flex-col items-center p-6 text-white">
+      <div className="min-h-screen bg-gradient-to-br from-purple-400 flex flex-col items-center p-6 text-black">
         <h1 className="text-3xl font-bold mb-6">การแจ้งเตือน</h1>
   
         <div className="w-full max-w-2xl space-y-4">
