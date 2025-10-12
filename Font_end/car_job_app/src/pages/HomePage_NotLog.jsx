@@ -29,7 +29,7 @@ function HomePage_NotLog() {
               <td className="py-3 border">12</td>
             </tr>
             <tr>
-              <Api_test/>
+              
             </tr>
           </tbody>
         </table>

@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 const Login_Page = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -14,19 +15,52 @@ const Login_Page = () => {
     return form.email.trim() !== "" && form.password.trim() !== "";
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    console.log("submitted")
     e.preventDefault();
-    if (!isFormValid()) return;
+    setError('');
+
+    if (!isFormValid()) {
+      setError("กรุณากรอกข้อมูลให้ครบถ้วน");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/applicant/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      if (!response.ok) {
+        setError("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+        return;
+      }
+
+      const data = await response.json();
+
+      const role = data.role
+
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("userEmail", form.email);
+
+      // นำทางตาม role
+      if (role === "hr") {
+        navigate("/hr");
+      } else {
+        navigate("/user");
+      }
+
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
+    }
 
     console.log("ข้อมูลเข้าสู่ระบบ:", form);
-
-    // ตัวอย่าง: สมมติว่าถ้า email มีคำว่า "hr" จะเข้าไปหน้า HR
-    if (form.email.includes("hr")) {
-      navigate("/hr");
-    } else {
-      navigate("/user");
-    }
   };
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-purple-200">
