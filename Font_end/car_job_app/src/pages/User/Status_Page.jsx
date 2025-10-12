@@ -1,25 +1,84 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-const Status_Page = ({ position, status }) => {
+const Status_Page = () => {
+    const [userData, setUserData] = useState(null); // สำหรับเก็บข้อมูลผู้ใช้จาก API
+    const [loading, setLoading] = useState(true); // สถานะโหลด
+    const [error, setError] = useState(null); // เก็บ error ถ้ามี
+  
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          // :small_blue_diamond: เรียก API ทั้งสองพร้อมกัน
+          const [applyRes] = await Promise.all([
+            fetch("/api/v1/applies"),
+          ]);
+    
+          // :small_blue_diamond: ตรวจสอบสถานะ response ก่อน
+          if (!applyRes.ok) throw new Error("Network apply was not ok");
+    
+          // :small_blue_diamond: แปลงเป็น JSON พร้อมกัน
+          const [applyData] = await Promise.all([
+            applyRes.json(),
+          ]);
+    
+          console.log("Apply data:", applyData);
+    
+          // :small_blue_diamond: ใช้ข้อมูลมา set state
+          if (Array.isArray(applyData) && applyData.length > 0) {
+            setUserData({
+              position: applyData[0]?.position || "ไม่ระบุตำแหน่ง",
+              status: applyData[0]?.status || "ไม่มีข้อมูล",
+            });
+          } else {
+            throw new Error("No applyData found");
+          }
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+    
+      fetchData();
+    }, []);
+  
+    // ระหว่างโหลดข้อมูล
+    if (loading) return <p className="text-center mt-20 text-gray-600">Loading...</p>;
+    if (error) return <p className="text-center mt-20 text-red-600">Error: {error}</p>;
+  
+    // ถ้าไม่มีข้อมูล
+    if (!userData) return <p className="text-center mt-20 text-gray-600">No data available.</p>;
   // กำหนดขั้นตอน
   
   const steps = [
     { id: 1, label: "ยื่นใบสมัคร", message: "ยื่นใบสมัครเรียบร้อย" },
-    { id: 2, label: "รอตรวจสอบ", message: "กำลังตรวจสอบเอกสาร" },
+    { id: 2, label: "รอพิจารณา", message: "กำลังตรวจสอบเอกสาร" },
     { id: 3, label: "นัดสัมภาษณ์", message: "รอนัดสัมภาษณ์" },
     { id: 4, label: "ผลการสมัคร", message: "ผ่าน" },
   ];
-
-
+  const index = 0;
+  if(userData.status == 'ยื่นใบสมัคร'){
+    index = 0;
+  }else if(userData.status == 'รอพิจารณา'){
+    index = 1;
+  }else if(userData.status == 'นัดสัมภาษณ์'){
+    index = 2;
+  }else if(userData.status == 'ผลการสมัคร'){
+    index = 3;
+  }
   // หาว่าตอนนี้อยู่ขั้นไหน
-  const currentStep = steps.find((s) => s.label === status) || steps[2];
+  const currentStep = steps.find((s) => s.label === userData.status) || steps[1];
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-900 to-black">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-2xl">
         {/* หัวข้อ */}
         <h2 className="text-center text-xl font-bold text-gray-800 mb-8">
-          การสมัคร : {position}
+          การสมัคร : {userData.position}
+        </h2>
+        <h2 className="text-gray-600 text-lg mb-4">
+          การสมัคร:{" "}
+          <span className="font-medium">{userData.position}</span>
         </h2>
 
         {/* แสดงขั้นตอน */}
