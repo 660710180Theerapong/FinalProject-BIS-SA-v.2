@@ -68,7 +68,13 @@ const Login_Page = () => {
         <h2 className="text-center text-xl font-semibold text-gray-800 mb-6">
           เข้าสู่ระบบสำหรับผู้สมัครงาน
         </h2>
+        {error && (
+  <div className="mb-4 p-3 bg-red-100 text-red-700 border border-red-300 rounded text-center text-sm">
+    {error}
+  </div>
+)}
 
+<form onSubmit={handleSubmit} className="space-y-4"></form>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Email */}
           <div>

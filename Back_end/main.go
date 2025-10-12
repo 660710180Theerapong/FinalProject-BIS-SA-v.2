@@ -325,7 +325,37 @@ func getApply(c *gin.Context) {
     c.JSON(http.StatusOK, apply)
 }
 
+func updateApply(c *gin.Context) {
+    var ID int
+    id := c.Param("id")
+    var updateApplicant Applicant
 
+    if err := c.ShouldBindJSON(&updateApplicant); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    var updatedAt time.Time
+    err := db.QueryRow(
+        `UPDATE Applicants
+         SET stage = $1
+         WHERE id = $2
+         RETURNING ID,updated_at`,
+        updateApplicant.Stage, updateApplicant.LastName, updateApplicant.Birthday, updateApplicant.EMAIL,
+        updateApplicant.PHONE, id,
+    ).Scan(&ID, &updateApplicant)
+
+    if err == sql.ErrNoRows {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Applicant not found"})
+        return
+    } else if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    updateApplicant.ApplicantID = ID
+	updateApplicant.UpdatedAt = updatedAt
+	c.JSON(http.StatusOK, updateApplicant)
+}
 
 func createApply(c *gin.Context) {
     var newApply Apply
