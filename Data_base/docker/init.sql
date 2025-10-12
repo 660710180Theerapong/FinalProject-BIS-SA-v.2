@@ -13,7 +13,7 @@ CREATE TABLE applicants (
     applicant_id    SERIAL PRIMARY KEY,
     first_name      VARCHAR(255) NOT NULL,
     last_name       VARCHAR(255)NOT NULL,
-    birt_day        DATE NOT NULL,
+    birth_day        DATE NOT NULL,
     email           VARCHAR(255) NOT NULL UNIQUE,
     phone           VARCHAR(10) NOT NULL,
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -92,7 +92,7 @@ INSERT INTO appuser (email, password, role) VALUES
     ('somchai@gmail.com', '123', 'applicant'),
     ('somyain@gmail.com', '456', 'applicant');
 
-INSERT INTO blacklist (first_name, last_name, birt_day, email) VALUES
+INSERT INTO blacklist (first_name, last_name, birth_day, email) VALUES
     ('มานี', 'มาแล้ว', '20/12/2555','monnie@gmail.com'),
     ('นายนาว', 'เล็กจัด', '1/5/2505','nnnn@gmail.com'),
     ('ใบตาล', 'บ้านใหญ่', '4/7/2545','somchai@gmail.com');
@@ -105,7 +105,7 @@ INSERT INTO hr (first_name, last_name, email, phone) VALUES
     ('หนึ่ง', 'ไม้รวย', 'nnnn@gmail.com', '0957468742');
 
 -- Insert Applicants
-INSERT INTO applicants (first_name, last_name, birt_day, email, phone) VALUES
+INSERT INTO applicants (first_name, last_name, birth_day, email, phone) VALUES
     ('สมชาย', 'รวยน้อย', '12/12/2540', 'somchai@gmail.com', '0922145624'),
     ('สมหญิง', 'รวยมาก', '30/2/2530', 'somyain@gmail.com', '0957464567');
 

@@ -16,7 +16,7 @@ type Applicant struct {
 	ApplicantID int       	`json:"applicant_id"`
 	FirstName 	string    	`json:"first_name"`
 	LastName    string    	`json:"last_name"`
-    Age         int         `json:"age"`
+    Birthday    time.Time   `json:"birth_day"`
 	EMAIL      	string    	`json:"email"`
 	PHONE      	string      `json:"phone"`
 	CreatedAt 	time.Time 	`json:"created_at"`
@@ -27,7 +27,7 @@ type Apply struct {
 	ApplyID     int       	`json:"apply_id"`
 	Position 	string    	`json:"position"`
 	File        string    	`json:"file"`
-	Stage      	string    	`json:"stage"`
+	Stage       string    	`json:"stage"`
 	ApplicantID int      `json:"applicant_id"`
 	CreatedAt 	time.Time 	`json:"created_at"`
 	UpdatedAt 	time.Time 	`json:"updated_at"`
@@ -51,6 +51,13 @@ type Schedule struct {
     ApplicantID     int         `json:"applicant_id"`
 }
 
+type Appuser struct {
+    Email      	string    	`json:"email"`
+    Password    string      `json:"password"`
+    Role        string      `json:"role"`
+    IsLogin     bool        `json:"islogin"`
+	CreatedAt 	time.Time 	`json:"created_at"`
+}
 
 func getEnv(key, defaultValue string) string{
 	if value := os.Getenv(key); value != ""{
@@ -97,7 +104,7 @@ func initDB(){
 func getAllApplicants(c *gin.Context) {
     var rows *sql.Rows
     var err error
-    rows, err = db.Query("SELECT applicant_id, first_name, last_name, age, email, phone, created_at FROM applicants")
+    rows, err = db.Query("SELECT applicant_id, first_name, last_name, birth_day, email, phone, created_at FROM applicants")
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
@@ -107,7 +114,7 @@ func getAllApplicants(c *gin.Context) {
     var applicants []Applicant
     for rows.Next() {
         var applicant Applicant
-        err := rows.Scan(&applicant.ApplicantID, &applicant.FirstName, &applicant.LastName, &applicant.Age, &applicant.EMAIL, &applicant.PHONE, &applicant.CreatedAt)
+        err := rows.Scan(&applicant.ApplicantID, &applicant.FirstName, &applicant.LastName, &applicant.Birthday, &applicant.EMAIL, &applicant.PHONE, &applicant.CreatedAt)
         if err != nil {
         }
         applicants = append(applicants, applicant)
@@ -119,12 +126,62 @@ func getAllApplicants(c *gin.Context) {
 	c.JSON(http.StatusOK, applicants)
 }
 
+func getApplicantAuthen(c *gin.Context) {
+    var appuser Appuser
+
+    if err := c.ShouldBindJSON(&appuser); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        fmt.Println("❌ JSON binding error:", err.Error())
+        return
+    }
+
+    fmt.Println("✅ Email:", appuser.Email)
+    fmt.Println("✅ Password:", appuser.Password)
+
+    var role string
+    err := db.QueryRow("SELECT role FROM appuser WHERE email=$1 AND password=$2", appuser.Email, appuser.Password).Scan(&role)
+    if err != nil {
+        fmt.Println("❌ QueryRow error:", err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "ไม่พบผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง"})
+        return
+    }
+
+    result, err := db.Exec(`
+        UPDATE appuser 
+        SET islogin = TRUE 
+        WHERE email = $1 AND password = $2
+    `, appuser.Email, appuser.Password)
+
+    if err != nil {
+        fmt.Println("❌ SQL Update error:", err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "ไม่สามารถอัพเดตสถานะการล็อกอินได้"})
+        return
+    }
+
+    rowsAffected, err := result.RowsAffected()
+    if err != nil {
+        fmt.Println("❌ RowsAffected error:", err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "ไม่สามารถตรวจสอบผลลัพธ์ของการอัพเดตได้"})
+        return
+    }
+
+    if rowsAffected == 0 {
+        fmt.Println("❌ No rows updated")
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "ไม่สามารถอัพเดตสถานะการล็อกอินได้"})
+        return
+    }
+
+    fmt.Println("✅ Role:", role)
+
+    c.JSON(http.StatusOK, gin.H{"role": role})
+}
+
 func getApplicant(c *gin.Context) {
     id := c.Param("id")
     var applicant Applicant
 
-    err := db.QueryRow("SELECT applicant_id, first_name, last_name, age, email, phone FROM applicants id = $1", id).
-        Scan(&applicant.ApplicantID, &applicant.FirstName, &applicant.LastName, &applicant.Age, &applicant.EMAIL, &applicant.PHONE)
+    err := db.QueryRow("SELECT applicant_id, first_name, last_name, birth_day, email, phone FROM applicants id = $1", id).
+        Scan(&applicant.ApplicantID, &applicant.FirstName, &applicant.LastName, &applicant.Birthday, &applicant.EMAIL, &applicant.PHONE)
 
     if err == sql.ErrNoRows {
         c.JSON(http.StatusNotFound, gin.H{"error": "applicant not found"})
@@ -149,10 +206,10 @@ func createApplicant(c *gin.Context) {
     var createdAt, updatedAt time.Time
 
     err := db.QueryRow(
-        `INSERT INTO Applicants (first_name, last_name, age, email, phone)
+        `INSERT INTO Applicants (first_name, last_name, birth_day, email, phone)
          VALUES ($1, $2, $3, $4, $5)
          RETURNING id, created_at, updated_at`,
-        newApplicant.FirstName, newApplicant.LastName, newApplicant.Age, newApplicant.EMAIL, newApplicant.PHONE,
+        newApplicant.FirstName, newApplicant.LastName, newApplicant.Birthday, newApplicant.EMAIL, newApplicant.PHONE,
     ).Scan(&id, &createdAt, &updatedAt)
 
     if err != nil {
@@ -180,10 +237,10 @@ func updateApplicant(c *gin.Context) {
     var updatedAt time.Time
     err := db.QueryRow(
         `UPDATE Applicants
-         SET first_name = $1, last_name = $2, age =$3, email = $4, phone = $5
+         SET first_name = $1, last_name = $2, birth_day =$3, email = $4, phone = $5
          WHERE id = $6
          RETURNING ID,updated_at`,
-        updateApplicant.FirstName, updateApplicant.LastName, updateApplicant.Age, updateApplicant.EMAIL,
+        updateApplicant.FirstName, updateApplicant.LastName, updateApplicant.Birthday, updateApplicant.EMAIL,
         updateApplicant.PHONE, id,
     ).Scan(&ID, &updateApplicant)
 
@@ -219,7 +276,7 @@ func deleteApplicant(c *gin.Context) {
         return
     }
 
-    c.JSON(http.StatusOK, gin.H{"message": "Applicant deleted successfully"})
+    c.JSON(http.StatusOK, gin.H{"messbirth_day": "Applicant deleted successfully"})
 }
 
 
@@ -322,7 +379,7 @@ func deleteApply(c *gin.Context) {
         return
     }
 
-    c.JSON(http.StatusOK, gin.H{"message": "Apply deleted successfully"})
+    c.JSON(http.StatusOK, gin.H{"messbirth_day": "Apply deleted successfully"})
 }
 
 
@@ -367,10 +424,10 @@ func main(){
 	r.GET("/health", func(c *gin.Context) {
 		err := db.Ping()
 		if err != nil{
-			c.JSON(http.StatusServiceUnavailable, gin.H{"message":"unhealty", "error":err})
+			c.JSON(http.StatusServiceUnavailable, gin.H{"messbirth_day":"unhealty", "error":err})
 			return
 		}
-		c.JSON(200, gin.H{"message": "healthy"})
+		c.JSON(200, gin.H{"messbirth_day": "healthy"})
 	})
 
 	api := r.Group("/api/v1")
@@ -379,6 +436,7 @@ func main(){
 	 	api.GET("/applicants/:id", getApplicant)
 	 	api.POST("/applicant", createApplicant)
 	 	api.PUT("/applicants/:id", updateApplicant)
+        api.POST("/applicant/auth", getApplicantAuthen)
 	 	api.DELETE("/applicants/:id", deleteApplicant)
 
         api.GET("/applies", getAllApply)
