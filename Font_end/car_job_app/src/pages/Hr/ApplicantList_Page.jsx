@@ -1,9 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import applicants from "../../data/applicants";
 
 export default function ApplicantList() {
   const navigate = useNavigate();
+
+  const [applies, setApplies] = useState([]);
+  const [applicants, setApplicants] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [filters, setFilters] = useState({
     name: "",
     position: "",
@@ -11,7 +16,48 @@ export default function ApplicantList() {
     date: "",
   });
 
-  // ฟังก์ชันเปลี่ยนค่าฟิลเตอร์
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        const [applicantRes, applyRes] = await Promise.all([
+          fetch("/api/v1/applicants"),
+          fetch("/api/v1/applies"),
+        ]);
+
+        if (!applicantRes.ok || !applyRes.ok) {
+          throw new Error("Failed to fetch data");
+        }
+
+        const applicantData = await applicantRes.json();
+        const applyData = await applyRes.json();
+
+        // รวมข้อมูล apply + applicant ตาม applicant_id
+        const merged = applyData.map((apply) => {
+          const applicant = applicantData.find(
+            (a) => a.applicant_id === apply.applicant_id
+          );
+          return {
+            ...apply,
+            applicant, // อาจเป็น undefined ถ้าไม่เจอ
+          };
+        });
+
+        setApplies(merged);
+        setApplicants(applicantData);
+        setError(null);
+      } catch (err) {
+        setError(err.message);
+        console.error("Fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const handleChange = (e) => {
     setFilters({
       ...filters,
@@ -19,19 +65,22 @@ export default function ApplicantList() {
     });
   };
 
-  // ฟิลเตอร์ข้อมูล
-  const filteredApplicants = applicants.filter((a) => {
-    const matchName = a.name.toLowerCase().includes(filters.name.toLowerCase());
-    const matchPosition = a.position.toLowerCase().includes(filters.position.toLowerCase());
-    const matchStatus = a.status.toLowerCase().includes(filters.status.toLowerCase());
-    const matchDate = filters.date ? a.date === filters.date : true;
+  const filteredApplies = applies.filter((a) => {
+    const fullName = `${a.applicant?.first_name || ""} ${a.applicant?.last_name || ""}`;
+    const matchName = fullName.toLowerCase().includes(filters.name.toLowerCase());
+    const matchPosition = (a.position || "").toLowerCase().includes(filters.position.toLowerCase());
+    const matchStatus = (a.stage || "").toLowerCase().includes(filters.status.toLowerCase());
+    const matchDate = filters.date
+      ? new Date(a.created_at).toISOString().slice(0, 10) === filters.date
+      : true;
+
     return matchName && matchPosition && matchStatus && matchDate;
   });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-800 via-pink-600 to-purple-900 p-8 text-white">
       <div className="max-w-5xl mx-auto">
-        {/* 🔍 ฟิลเตอร์ค้นหา */}
+        {/* 🔍 Filter */}
         <div className="flex flex-wrap gap-3 mb-6 bg-gray-900/30 p-4 rounded-2xl">
           <input
             name="name"
@@ -63,24 +112,30 @@ export default function ApplicantList() {
           />
         </div>
 
-        {/* 📋 รายชื่อผู้สมัคร */}
-        {filteredApplicants.map((a, index) => (
+        {/* 🔄 Loading/Error */}
+        {loading && <p className="text-center py-8">กำลังโหลดข้อมูล...</p>}
+        {error && (
+          <p className="text-center py-8 text-red-400">เกิดข้อผิดพลาด: {error}</p>
+        )}
+
+        {/* 📋 รายชื่อ */}
+        {!loading && !error && filteredApplies.map((a, index) => (
           <div
-            key={a.id}
+            key={a.apply_id}
             className="bg-gray-800 rounded-2xl p-4 mb-4 hover:bg-gray-700 cursor-pointer transition"
-            onClick={() => navigate(`/manage/${a.id}`)}
+            onClick={() => navigate(`/manage/${a.apply_id}`)}
           >
             <p className="text-lg font-bold">
-              {index + 1}. {a.name} อายุ {a.age} | {a.position} |{" "}
-              <span className="text-pink-400">สถานะ : {a.status}</span>
+              {index + 1}. {a.applicant?.first_name} {a.applicant?.last_name} อายุ {a.applicant?.age} | {a.position} |{" "}
+              <span className="text-pink-400">สถานะ : {a.stage}</span>
             </p>
             <p className="text-gray-300 mt-1 text-sm">
-              🗓 วันที่สมัคร: {new Date(a.date).toLocaleDateString("th-TH")}
+              🗓 วันที่สมัคร: {new Date(a.created_at).toLocaleDateString("th-TH")}
             </p>
           </div>
         ))}
 
-        {filteredApplicants.length === 0 && (
+        {!loading && !error && filteredApplies.length === 0 && (
           <p className="text-center text-gray-300 mt-10">ไม่พบข้อมูลผู้สมัคร</p>
         )}
       </div>
