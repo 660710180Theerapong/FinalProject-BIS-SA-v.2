@@ -417,7 +417,7 @@ func getHr(c *gin.Context) {
     id := c.Param("id")
     var hr Hr
 
-    err := db.QueryRow("SELECT hr_id, first_name, last_name, email, phone FROM hr WHERE id = $1", id).
+    err := db.QueryRow("SELECT hr_id, first_name, last_name, email, phone FROM hr WHERE hr_id = $1", id).
         Scan(&hr.HrID, &hr.FirstName, &hr.LastName, &hr.EMAIL, &hr.PHONE)
 
     if err == sql.ErrNoRows {
