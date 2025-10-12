@@ -57,7 +57,7 @@ export default function ManageApplicant() {
 
   const handleSave = async () => {
     try {
-      const res = await fetch(`api/v1/applies/${apply.apply_id}`, {
+      const res = await fetch(`api/v1/api/v1/apply/${apply.apply_id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

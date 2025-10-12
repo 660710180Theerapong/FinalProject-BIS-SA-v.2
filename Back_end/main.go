@@ -326,36 +326,42 @@ func getApply(c *gin.Context) {
 }
 
 func updateApply(c *gin.Context) {
-    var ID int
-    id := c.Param("id")
-    var updateApplicant Applicant
+    idParam := c.Param("id")
+    id, err := strconv.Atoi(idParam)
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+        return
+    }
 
-    if err := c.ShouldBindJSON(&updateApplicant); err != nil {
+    var updateApply Apply
+    if err := c.ShouldBindJSON(&updateApply); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
 
+    // อัปเดต stage และคืนค่า updated_at
     var updatedAt time.Time
-    err := db.QueryRow(
-        `UPDATE Applicants
-         SET stage = $1
+    err = db.QueryRow(
+        `UPDATE Apply
+         SET stage = $1, updated_at = NOW()
          WHERE id = $2
-         RETURNING ID,updated_at`,
-        updateApplicant.Stage, updateApplicant.LastName, updateApplicant.Birthday, updateApplicant.EMAIL,
-        updateApplicant.PHONE, id,
-    ).Scan(&ID, &updateApplicant)
+         RETURNING updated_at`,
+        updateApply.Stage, id,
+    ).Scan(&updatedAt)
 
     if err == sql.ErrNoRows {
-        c.JSON(http.StatusNotFound, gin.H{"error": "Applicant not found"})
+        c.JSON(http.StatusNotFound, gin.H{"error": "Apply not found"})
         return
     } else if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
-    updateApplicant.ApplicantID = ID
-	updateApplicant.UpdatedAt = updatedAt
-	c.JSON(http.StatusOK, updateApplicant)
+
+    updateApply.ApplyID = id
+    updateApply.UpdatedAt = updatedAt
+    c.JSON(http.StatusOK, updateApply)
 }
+
 
 func createApply(c *gin.Context) {
     var newApply Apply
@@ -471,6 +477,7 @@ func main(){
 
         api.GET("/applies", getAllApply)
 	 	api.GET("/apply/:id", getApply)
+        api.PUT("/apply/:id", updateApply)
 	 	api.POST("/apply", createApply)
 	 	api.DELETE("/apply/:id", deleteApply)
 
