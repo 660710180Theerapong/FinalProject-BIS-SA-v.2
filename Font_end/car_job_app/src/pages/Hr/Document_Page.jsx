@@ -9,7 +9,9 @@ export default function Document_Page() {
     firstName: "",
     lastName: "",
     position: "",
+    resume: null
   });
+
 
   // 📋 ข้อมูลตัวอย่าง (สามารถเชื่อม API จริงภายหลังได้)
   const documents = [
@@ -20,6 +22,7 @@ export default function Document_Page() {
       docName: "เอกสารประกอบการสมัคร",
       docType: "เอกสารประกอบการสมัคร",
       position: "พนักงานล้างรถ",
+      resume: '/images/carwash/resume.jpg'
     },
     {
       date: "2025-05-20",
@@ -28,6 +31,7 @@ export default function Document_Page() {
       docName: "เอกสารประกอบการสมัคร",
       docType: "เอกสารประกอบการสมัคร",
       position: "พนักงานบริการ",
+      resume: '/images/carwash/resume.jpg'
     },
     {
       date: "2025-05-11",
@@ -36,6 +40,7 @@ export default function Document_Page() {
       docName: "เอกสารประกอบการสมัคร",
       docType: "เอกสารประกอบการสมัคร",
       position: "พนักงานบริการ",
+      resume: '/images/carwash/resume.jpg'
     },
     {
       date: "2025-05-10",
@@ -44,8 +49,11 @@ export default function Document_Page() {
       docName: "เอกสารประกอบการสมัคร",
       docType: "เอกสารประกอบการสมัคร",
       position: "พนักงานล้างรถ",
+      resume: '/images/carwash/resume.jpg'
     },
   ];
+
+ const [selectedDoc, setSelectedDoc] = useState(null);
 
   // 📌 ฟังก์ชันเปลี่ยนค่าในฟอร์ม
   const handleChange = (e) => {
@@ -155,6 +163,7 @@ export default function Document_Page() {
             <div
               key={index}
               className="bg-gray-800 text-white rounded-xl p-4 hover:bg-gray-700 transition"
+              onClick={() => setSelectedDoc(doc)}
             >
               <p className="text-lg leading-relaxed">
                 {doc.date.split("-").reverse().join("-")}{" "}
@@ -169,6 +178,29 @@ export default function Document_Page() {
           </p>
         )}
       </div>
+      
+ {selectedDoc && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+          <div className="bg-white text-black rounded-2xl p-6 max-w-lg w-11/12 relative">
+            <button
+              className="absolute top-2 right-3 text-xl text-red-500 font-bold"
+              onClick={() => setSelectedDoc(null)}
+            >
+              ✕
+            </button>
+            <h2 className="text-xl font-bold mb-4">
+              Resume ของ {selectedDoc.firstName} {selectedDoc.lastName}
+            </h2>
+
+              {/* แสดงรูปภาพ */}
+            <img
+              src={selectedDoc.resume}
+              alt={`Resume ของ ${selectedDoc.firstName}`}
+              className="rounded-xl shadow-lg mx-auto max-h-[70vh] object-contain"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
