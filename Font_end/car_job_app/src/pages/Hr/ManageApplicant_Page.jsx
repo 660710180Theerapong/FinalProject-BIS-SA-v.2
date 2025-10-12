@@ -1,32 +1,102 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import applicants from "../../data/applicants";
 
 export default function ManageApplicant() {
-  const { id } = useParams();
+  const { id } = useParams(); // apply_id
   const navigate = useNavigate();
 
-  const applicant = applicants.find((a) => a.id === parseInt(id));
-  const [status, setStatus] = useState(applicant?.status || "");
+  const [apply, setApply] = useState(null);
+  const [applicant, setApplicant] = useState(null);
+  const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // สมมติข้อมูลผลสัมภาษณ์
-  const interviewResults = {
-    1: "ยังไม่ได้สัมภาษณ์",
-    2: "พูดจาดี มีประสบการณ์บริการลูกค้า",
-    3: "ยังขาดประสบการณ์ด้านล้างรถเล็กน้อย แต่เรียนรู้เร็ว",
+  // 🔁 Load data จาก API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        const [applyRes, applicantRes] = await Promise.all([
+          fetch("/api/v1/applies"),
+          fetch("/api/v1/applicants"),
+        ]);
+
+        if (!applyRes.ok || !applicantRes.ok) {
+          throw new Error("โหลดข้อมูลไม่สำเร็จ");
+        }
+
+        const applies = await applyRes.json();
+        const applicants = await applicantRes.json();
+
+        const selectedApply = applies.find(
+          (a) => a.apply_id === parseInt(id)
+        );
+        if (!selectedApply) {
+          throw new Error("ไม่พบข้อมูลการสมัคร");
+        }
+
+        const selectedApplicant = applicants.find(
+          (a) => a.applicant_id === selectedApply.applicant_id
+        );
+
+        setApply(selectedApply);
+        setApplicant(selectedApplicant);
+        setStatus(selectedApply.stage || "");
+        setError(null);
+      } catch (err) {
+        setError(err.message);
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  const handleSave = async () => {
+    try {
+      const res = await fetch(`api/v1/applies/${apply.apply_id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ stage: status }),
+      });
+  
+      if (!res.ok) {
+        throw new Error("บันทึกสถานะไม่สำเร็จ");
+      }
+  
+      alert("บันทึกสถานะใหม่เรียบร้อย!");
+      navigate(-1);
+    } catch (error) {
+      alert(`เกิดข้อผิดพลาด: ${error.message}`);
+    }
   };
 
-  if (!applicant) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
-        <p>ไม่พบข้อมูลผู้สมัคร</p>
+        <p>กำลังโหลดข้อมูล...</p>
       </div>
     );
   }
 
-  const handleSave = () => {
-    alert(`บันทึกสถานะใหม่เรียบร้อย!\nสถานะ: ${status}`);
-    navigate(-1); // กลับไปหน้ารายชื่อ
+  if (error || !apply || !applicant) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+        <p>❌ {error || "ไม่พบข้อมูลผู้สมัคร"}</p>
+      </div>
+    );
+  }
+
+  // สมมติผลสัมภาษณ์ (เดิม)
+  const interviewResults = {
+    1: "ยังไม่ได้สัมภาษณ์",
+    2: "พูดจาดี มีประสบการณ์บริการลูกค้า",
+    3: "ยังขาดประสบการณ์ด้านล้างรถเล็กน้อย แต่เรียนรู้เร็ว",
   };
 
   return (
@@ -36,14 +106,16 @@ export default function ManageApplicant() {
           จัดการข้อมูลผู้สมัคร
         </h1>
 
-        <p className="text-xl mb-2 font-semibold">{applicant.name}</p>
+        <p className="text-xl mb-2 font-semibold">
+          {applicant.first_name} {applicant.last_name}
+        </p>
         <p>อายุ: {applicant.age}</p>
-        <p>ตำแหน่ง: {applicant.position}</p>
+        <p>ตำแหน่งที่สมัคร: {apply.position}</p>
 
         {/* 🗒 ผลสัมภาษณ์ */}
         <div className="mt-4 bg-gray-700 p-3 rounded-lg">
           <p className="font-semibold mb-1">📝 ผลสัมภาษณ์:</p>
-          <p>{interviewResults[applicant.id]}</p>
+          <p>{interviewResults[apply.apply_id] || "ยังไม่มีข้อมูล"}</p>
         </div>
 
         {/* 🔄 แก้ไขสถานะ */}

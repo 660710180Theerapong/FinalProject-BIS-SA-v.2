@@ -23,11 +23,12 @@ import ApplicantList_Page from './pages/Hr/ApplicantList_Page';
 import ManageApplicant_Page from './pages/Hr/ManageApplicant_Page';
 import Document_Page from './pages/Hr/Document_Page';
 import Report_Page from './pages/Hr/Report_Page';
+import Profile_hr_Page from './pages/Hr/Profile_hr_Page';
 
 // Mock auth
 const auth = {
   isLoggedIn: true,
-  role: 'user', // 'user' หรือ 'hr'
+  role: 'hr', // 'user' หรือ 'hr'
 };
 
 // ProtectedRoute component
@@ -103,6 +104,14 @@ function App() {
               element={
                 <ProtectedRoute role="hr">
                   <HomePage_Hr_page />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/hr/profile"
+              element={
+                <ProtectedRoute role="hr">
+                  <Profile_hr_Page />
                 </ProtectedRoute>
               }
             />

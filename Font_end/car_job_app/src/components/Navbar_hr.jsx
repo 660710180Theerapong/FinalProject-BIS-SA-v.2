@@ -60,7 +60,7 @@ const Navbar_user = () => {
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-4">
-            <NavLink to="/profile" >
+            <NavLink to="/hr/profile" >
             <button className="p-2 text-white hover:text-gray-200 transition-colors"
                     onClick={() => setIsMenuOpen(false)}>
               <UserIcon className="h-6 w-6" />

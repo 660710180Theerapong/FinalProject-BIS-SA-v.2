@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const Profile_Page = () => {
+const Profile_hr_Page = () => {
   const [userData, setUserData] = useState(null); // สำหรับเก็บข้อมูลผู้ใช้จาก API
   const [loading, setLoading] = useState(true); // สถานะโหลด
   const [error, setError] = useState(null); // เก็บ error ถ้ามี
@@ -9,39 +9,33 @@ const Profile_Page = () => {
     const fetchData = async () => {
       try {
         // :small_blue_diamond: เรียก API ทั้งสองพร้อมกัน
-        const [applicantRes, applyRes] = await Promise.all([
-          fetch("/api/v1/applicants"),
-          fetch("/api/v1/applies"),
+        const [hrRes] = await Promise.all([
+          fetch("/api/v1/hr/1"),
         ]);
   
         // :small_blue_diamond: ตรวจสอบสถานะ response ก่อน
-        if (!applicantRes.ok) throw new Error("Network applicant was not ok");
-        if (!applyRes.ok) throw new Error("Network apply was not ok");
+        if (!hrRes.ok) throw new Error("Network applicant was not ok");
   
         // :small_blue_diamond: แปลงเป็น JSON พร้อมกัน
-        const [applicantData, applyData] = await Promise.all([
-          applicantRes.json(),
-          applyRes.json(),
+        const [hrData] = await Promise.all([
+          hrRes.json(),
         ]);
   
-        console.log("Applicant data:", applicantData);
-        console.log("Apply data:", applyData);
+        console.log("hrRes data:", hrData);
   
         // :small_blue_diamond: ใช้ข้อมูลมา set state
-        if (Array.isArray(applicantData) && applicantData.length > 0) {
+        //if (hrData.length > 0) {
           setUserData({
             fullname:
-              applicantData[0].first_name + " " + applicantData[0].last_name ||
+            hrData.first_name + " " + hrData.last_name ||
               "ไม่ทราบชื่อ",
-            phone: applicantData[0]?.phone,
-            email: applicantData[0]?.email,
-            position: applyData[0]?.position || "ไม่ระบุตำแหน่ง",
-            status: applyData[0]?.status || "รอการพิจารณา",
-            avatar: applicantData[0]?.avatar || '/images/carwash/profile.png' ,
+            phone: hrData?.phone,
+            email: hrData?.email,
+            avatar: hrData?.avatar || '/images/carwash/profile.png' ,
           });
-        } else {
-          throw new Error("No applicants found");
-        }
+     //    } else {
+     //      throw new Error("No applicants found");
+     //    }
       } catch (err) {
         setError(err.message);
       } finally {
@@ -88,27 +82,11 @@ const Profile_Page = () => {
               <p className="text-purple-600 text-sm font-semibold">Phone</p>
               <p className="text-gray-800 font-medium">{userData.phone}</p>
             </div>
-            <div>
-              <p className="text-purple-600 text-sm font-semibold">ตำแหน่งที่สมัคร</p>
-              <p className="text-gray-800 font-medium">{userData.position}</p>
-            </div>
           </div>
-          {/* สถานะ */}
-        <div
-          className={`inline-block px-4 py-2 rounded-full text-white text-sm font-medium ${
-            userData.status === "รอการพิจารณา"
-              ? "bg-yellow-500"
-              : userData.status === "รับเข้าทำงาน"
-              ? "bg-green-500"
-              : "bg-red-500"
-          }`}
-        >
-          {userData.status}
-        </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default Profile_Page;
+export default Profile_hr_Page;
