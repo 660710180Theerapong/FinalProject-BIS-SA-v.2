@@ -8,6 +8,7 @@ import(
 	"log"
 	"github.com/gin-gonic/gin"
     "github.com/gin-contrib/cors"
+    "strconv"
 	"net/http"
 	"time"
 )
@@ -339,12 +340,11 @@ func updateApply(c *gin.Context) {
         return
     }
 
-    // อัปเดต stage และคืนค่า updated_at
     var updatedAt time.Time
     err = db.QueryRow(
         `UPDATE Apply
          SET stage = $1, updated_at = NOW()
-         WHERE id = $2
+         WHERE apply_id = $2
          RETURNING updated_at`,
         updateApply.Stage, id,
     ).Scan(&updatedAt)
@@ -361,6 +361,7 @@ func updateApply(c *gin.Context) {
     updateApply.UpdatedAt = updatedAt
     c.JSON(http.StatusOK, updateApply)
 }
+
 
 
 func createApply(c *gin.Context) {
@@ -477,7 +478,7 @@ func main(){
 
         api.GET("/applies", getAllApply)
 	 	api.GET("/apply/:id", getApply)
-        api.PUT("/apply/:id", updateApply)
+        api.PUT("/upapply/:id", updateApply)
 	 	api.POST("/apply", createApply)
 	 	api.DELETE("/apply/:id", deleteApply)
 
