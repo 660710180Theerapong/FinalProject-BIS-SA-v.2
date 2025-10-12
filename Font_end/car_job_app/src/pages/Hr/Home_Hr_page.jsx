@@ -19,7 +19,7 @@ function HomePage_Hr_page() {
       {/* รูปภาพหลักหรือคำโฆษณา */}
       <div className="mt-12 flex justify-center">
         <img
-          src="/images/carwash/88 car wash.png"
+          src="/images/carwash/88_car_wash.png"
           alt="Car Wash"
           className="rounded-2xl shadow-lg w-[90%] max-w-3xl"
         />
