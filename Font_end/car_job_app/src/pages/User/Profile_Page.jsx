@@ -27,7 +27,7 @@ const Profile_Page = () => {
             phone: hrRes?.applicant?.phone || "",
             email: hrRes?.applicant?.email || "",
             position: hrRes?.application?.position || "ไม่ระบุตำแหน่ง",
-            status: hrRes?.application?.status || "รอการพิจารณา",
+            status: hrRes?.application?.stage || "รอการพิจารณา",
             avatar: hrRes?.applicant?.avatar || '/images/carwash/profile.png',
           });    
       } catch (err) {
@@ -84,8 +84,12 @@ const Profile_Page = () => {
           {/* สถานะ */}
         <div
           className={`inline-block px-4 py-2 rounded-full text-white text-sm font-medium ${
-            userData.status === "รอการพิจารณา"
+            userData.status === "สมัครแล้ว"
               ? "bg-yellow-500"
+              : userData.status === "นัดสัมภาษณ์"
+              ? "bg-yellow-500"
+              : userData.status === "ผ่านสัมภาษณ์"
+              ? "bg-green-500"
               : userData.status === "รับเข้าทำงาน"
               ? "bg-green-500"
               : "bg-red-500"
