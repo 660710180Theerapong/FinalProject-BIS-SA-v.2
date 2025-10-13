@@ -54,23 +54,29 @@ const Status_Page = () => {
     { id: 1, label: "ยื่นใบสมัคร", message: "ยื่นใบสมัครเรียบร้อย" },
     { id: 2, label: "รอพิจารณา", message: "กำลังตรวจสอบเอกสาร" },
     { id: 3, label: "นัดสัมภาษณ์", message: "รอนัดสัมภาษณ์" },
-    { id: 4, label: "ผลการสมัคร", message: "ผ่าน" },
+    { id: 4, label: "ผลการสมัคร", message: "ไม่ผ่านผ่าน" },
   ];
 
   let index;
   switch (userData.status?.trim()) {
-    case 'ยื่นใบสมัคร':
-      index = 0;
-      break;
-    case 'รอพิจารณา':
+    case 'สมัครแล้ว':
       index = 1;
       break;
     case 'นัดสัมภาษณ์':
       index = 2;
       break;
-    case 'ผลการสมัคร':
+    case 'ผ่านสัมภาษณ์':
       index = 3;
+      steps[3].message = 'ผ่านสัมภาษณ์'
       break;
+    case 'ไม่ผ่านสัมภาษณ์':
+      index = 3;
+            steps[3].message = 'ไม่ผ่านสัมภาษณ์'
+      break;
+      case 'รับเข้าทำงาน':
+        index = 3;
+        steps[3].message = 'ยินดีด้วยคุณผ่านการสมัคร'
+        break;
     default:
       index = 0; // หรือค่าที่ต้องการสำหรับกรณีไม่ตรง
   }

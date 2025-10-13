@@ -3,7 +3,7 @@ import InterviewTable from "../../components/InterviewTable";
 
 function HomePage_Hr_page() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-sky-200 to-white flex flex-col items-center font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-purple-300 to-purple-300 flex flex-col items-center font-sans">
 
       {/* ตารางนัดสัมภาษณ์ */}
       <InterviewTable />
