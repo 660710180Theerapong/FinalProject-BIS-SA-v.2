@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from '../contexts/AuthContext';
 
-const Login_Page = () => {
+const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { setAuth } = useAuth();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -16,61 +17,49 @@ const Login_Page = () => {
     return form.email.trim() !== "" && form.password.trim() !== "";
   };
 
-  // ✅ ดึง setAuth จาก context
-    const { setAuth } = useAuth();
-
   const handleSubmit = async (e) => {
-  console.log("submitted");
-  e.preventDefault();
-  setError("");
+    e.preventDefault();
+    setError("");
 
-  if (!isFormValid()) {
-    setError("กรุณากรอกข้อมูลให้ครบถ้วน");
-    return;
-  }
-
-  try {
-    const response = await fetch("http://localhost:8080/api/v1/applicant/auth", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    });
-
-    if (!response.ok) {
-      setError("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+    if (!isFormValid()) {
+      setError("กรุณากรอกข้อมูลให้ครบถ้วน");
       return;
     }
 
-    const data = await response.json();
-    const role = data.role;
-    console.log("role:", role, data);
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/applicant/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
-    localStorage.setItem("userEmail", form.email);
+      if (!response.ok) {
+        setError("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+        return;
+      }
 
-    
+      const data = await response.json();
+      const role = data.role || "user"; // fallback role
 
-    // ✅ อัปเดต context ด้วยข้อมูลที่ได้
-    setAuth({
-      isLoggedIn: true,
-      role: role,
-    });
+      localStorage.setItem("userEmail", form.email);
 
-    // ✅ นำทางตาม role
-    if (role === "hr") {
-      navigate("/hr");
-    } else {
-      navigate("/user");
+      setAuth({
+        isLoggedIn: true,
+        role: role,
+      });
+
+      if (role === "hr") {
+        navigate("/hr");
+      } else {
+        navigate("/user");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
     }
-
-  } catch (error) {
-    console.error("Login error:", error);
-    setError("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
-  }
-
-  console.log("ข้อมูลเข้าสู่ระบบ:", form);
-};
+  };
 
 
 
@@ -159,4 +148,4 @@ const Login_Page = () => {
   );
 };
 
-export default Login_Page;
+export default LoginPage;

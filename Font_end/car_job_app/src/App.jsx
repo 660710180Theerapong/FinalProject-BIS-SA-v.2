@@ -36,17 +36,18 @@ import { useAuth } from './contexts/AuthContext'; // 👈 ย้อนขึ้�
 // ProtectedRoute component
 function ProtectedRoute({ children, role }) {
   const { auth } = useAuth(); // 👉 ดึง auth จาก context
-  auth({
-      isLoggedIn: false,
-    });
-  if (auth.isLoggedIn===false) {
-    return <Navigate to="/login" />;
+
+  if (!auth.isLoggedIn) {
+    return <Navigate to="/login" replace />;
   }
+
   if (role && auth.role !== role) {
-    return <Navigate to="/" />; // หรือหน้าอื่นที่เหมาะสม
+    return <Navigate to="/" replace />; // หรือหน้าอื่นที่เหมาะสม
   }
+
   return children;
 }
+
 
 function App() {
   const { auth } = useAuth(); // 👉 ใช้ auth ที่แชร์จาก context
