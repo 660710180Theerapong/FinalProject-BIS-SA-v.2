@@ -1,46 +1,45 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from '../../contexts/AuthContext';
 
 const Status_Page = () => {
   const [userData, setUserData] = useState(null); // สำหรับเก็บข้อมูลผู้ใช้จาก API
   const [loading, setLoading] = useState(true); // สถานะโหลด
   const [error, setError] = useState(null); // เก็บ error ถ้ามี
-
+  const { auth } = useAuth();
+  const email = auth.email
   useEffect(() => {
-    const fetchData = async () => {
+     const fetchData = async () => {
       try {
-        // :small_blue_diamond: เรียก API ทั้งสองพร้อมกัน
-        const [applyRes] = await Promise.all([
-          fetch("/api/v1/applies"),
-        ]);
+      const res  = await fetch(`http://localhost:8080/api/v1/applicants/profile?email=${encodeURIComponent(email)}`, {
+        method: "GET",
+        headers: {
+        "Content-Type": "application/json",
+      }
+    });
+        const hrRes = await res.json();
 
-        // :small_blue_diamond: ตรวจสอบสถานะ response ก่อน
-        if (!applyRes.ok) throw new Error("Network apply was not ok");
+          const firstName = hrRes?.applicant?.first_name || "";
+        const lastName = hrRes?.applicant?.last_name || "";
+        const fullName = (firstName + " " + lastName).trim() || "ไม่ทราบชื่อ";
 
-        // :small_blue_diamond: แปลงเป็น JSON พร้อมกัน
-        const [applyData] = await Promise.all([
-          applyRes.json(),
-        ]);
-
-        console.log("Apply data:", applyData);
-
-        // :small_blue_diamond: ใช้ข้อมูลมา set state
-        if (Array.isArray(applyData) && applyData.length > 0) {
           setUserData({
-            position: applyData[0]?.position || "ไม่ระบุตำแหน่ง",
-            status: applyData[0]?.stage || "ไม่มีข้อมูล",
-          });
-        } else {
-          throw new Error("No applyData found");
-        }
+            fullname: fullName,
+            phone: hrRes?.applicant?.phone || "",
+            email: hrRes?.applicant?.email || "",
+            position: hrRes?.application?.position || "ไม่ระบุตำแหน่ง",
+            status: hrRes?.application?.status || "รอการพิจารณา",
+            avatar: hrRes?.applicant?.avatar || '/images/carwash/profile.png',
+          });    
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchData();
-  }, []);
+  }, [auth.email]);
+
 
   // ระหว่างโหลดข้อมูล
   if (loading) return <p className="text-center mt-20 text-gray-600">Loading...</p>;
@@ -87,7 +86,7 @@ const Status_Page = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-purple-400 px-4">
       {/* ข้อความด้านบน อยู่นอก card */}
       <h2 className="text-3xl font-bold mb-6">
-        การสมัคร : {userData.position}
+        การสมัคร : {userData.position} {userData.status}
       </h2>
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-2xl">
         {/* แสดงขั้นตอน */}

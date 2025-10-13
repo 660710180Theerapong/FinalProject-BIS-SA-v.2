@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { ShoppingCartIcon, SearchIcon, UserIcon, MenuIcon, XIcon } from '@heroicons/react/outline';
 
 const Navbar = () => {
      const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -36,7 +35,7 @@ const Navbar = () => {
                                         }`
                                    }
                               >
-                                   LOGIN
+                                   เข้าสู่ระบบ
                               </NavLink>
                               <NavLink
                                    to="/register"
@@ -45,7 +44,7 @@ const Navbar = () => {
                                         }`
                                    }
                               >
-                                   SINGIN
+                                   สมัครสมาชิก
                               </NavLink>
                          </div>
                     </div>
