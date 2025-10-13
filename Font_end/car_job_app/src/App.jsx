@@ -27,15 +27,10 @@ import Profile_hr_Page from './pages/Hr/Profile_hr_Page';
 
 import { useAuth } from './contexts/AuthContext'; // 👈 ย้อนขึ้นไปหา contexts
 
-// Mock auth
-// const auth = {
-//   isLoggedIn: true,
-//   role: 'user', // 'user' หรือ 'hr'
-// };
 
-// ProtectedRoute component
 function ProtectedRoute({ children, role }) {
   const { auth } = useAuth(); // 👉 ดึง auth จาก context
+
 
   if (!auth.isLoggedIn) {
     return <Navigate to="/login" replace />;
@@ -78,7 +73,7 @@ function App() {
             <Route
               path="/user"
               element={
-                <ProtectedRoute role="user">
+                <ProtectedRoute role="applicant">
                   <HomePage />
                 </ProtectedRoute>
               }
@@ -86,7 +81,7 @@ function App() {
             <Route
               path="/user/profile"
               element={
-                <ProtectedRoute role="user">
+                <ProtectedRoute role="applicant">
                   <Profile_Page />
                 </ProtectedRoute>
               }
@@ -94,7 +89,7 @@ function App() {
             <Route
               path="/user/status"
               element={
-                <ProtectedRoute role="user">
+                <ProtectedRoute role="applicant">
                   <Status_Page />
                 </ProtectedRoute>
               }
@@ -102,7 +97,7 @@ function App() {
             <Route
               path="/user/notification"
               element={
-                <ProtectedRoute role="user">
+                <ProtectedRoute role="applicant">
                   <NotificationPage />
                 </ProtectedRoute>
               }

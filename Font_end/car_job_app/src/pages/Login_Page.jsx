@@ -48,6 +48,7 @@ const LoginPage = () => {
       setAuth({
         isLoggedIn: true,
         role: role,
+        email: form.email,
       });
 
       if (role === "hr") {

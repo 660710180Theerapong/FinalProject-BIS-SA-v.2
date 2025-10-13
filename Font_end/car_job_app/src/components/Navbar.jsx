@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { ShoppingCartIcon, SearchIcon, UserIcon, MenuIcon, XIcon } from '@heroicons/react/outline';
 
-const Navbar_user = () => {
+const Navbar = () => {
      const [isMenuOpen, setIsMenuOpen] = useState(false);
      const [cartCount] = useState(3);
 
@@ -54,4 +54,4 @@ const Navbar_user = () => {
      );
 };
 
-export default Navbar_user;
+export default Navbar;

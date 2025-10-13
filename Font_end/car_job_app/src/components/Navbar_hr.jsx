@@ -1,13 +1,22 @@
 import React, { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink,useNavigate } from 'react-router-dom';
 import { ShoppingCartIcon, SearchIcon, UserIcon, MenuIcon, XIcon } from '@heroicons/react/outline';
+import { useAuth } from '../contexts/AuthContext';
 
-const Navbar_user = () => {
+const Navbar_hr = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cartCount] = useState(3);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const { setAuth } = useAuth(); // ✅
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    setAuth({ isLoggedIn: false, role: "" }); // ✅ เปลี่ยนสถานะ auth
+    navigate("/"); // ✅ กลับหน้าแรกหรือ login
   };
 
   return (
@@ -66,6 +75,17 @@ const Navbar_user = () => {
               <UserIcon className="h-6 w-6" />
             </button>
             </NavLink>
+            <NavLink
+                to="#"
+                onClick={handleLogout}
+                className={({ isActive }) =>
+                `text-white hover:text-gray-200 transition-colors font-medium ${
+                isActive ? "border-b-2 border-white" : ""
+                    }`
+                  }
+                >
+              Logout
+            </NavLink>
           </div>
         </div>
       </div>
@@ -73,4 +93,4 @@ const Navbar_user = () => {
   );
 };
 
-export default Navbar_user;
+export default Navbar_hr;
