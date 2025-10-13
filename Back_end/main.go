@@ -520,6 +520,27 @@ func getHrbyEmail(c *gin.Context) {
     c.JSON(http.StatusOK, hr)
 }
 
+func getApplicantProfile(c *gin.Context) {
+    email := c.Query("email")
+    var applicant Applicant
+    var apply1 Apply
+    err := db.QueryRow("SELECT a1.first_name, a1.last_name, a1.email, a1.phone, a2.position, a2.stage FROM applicants a1 LEFT join apply a2 on a1.applicant_id=a2.applicant_id WHERE email = $1", email).
+        Scan(&applicant.FirstName, &applicant.LastName, &applicant.Email, &applicant.Phone, &apply1.Position, &apply1.Stage)
+
+    if err == sql.ErrNoRows {
+        c.JSON(http.StatusNotFound, gin.H{"error": "applicant not found"})
+        return
+    } else if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{
+        "applicant": applicant,
+        "application": apply1,
+    })
+}
+
 // @title           Simple API Example
 // @version         1.0
 // @description     This is a simple example of using Gin with Swagger.
@@ -557,6 +578,7 @@ func main(){
 	 	api.PUT("/applicants/:id", updateApplicant)
         api.POST("/applicant/auth", getApplicantAuthen)
 	 	api.DELETE("/applicants/:id", deleteApplicant)
+        api.GET("/applicants/profile", getApplicantProfile)
 
         api.GET("/applies", getAllApply)
 	 	api.GET("/apply/:id", getApply)
@@ -568,6 +590,7 @@ func main(){
         api.POST("/blacklist", getVerifyBlacklist)
         api.GET("/hr/:id", getHr)
         api.GET("/hre", getHrbyEmail)
+        
     }
 	r.Run(":8080")
 }
