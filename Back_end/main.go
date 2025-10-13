@@ -18,8 +18,8 @@ type Applicant struct {
 	FirstName 	string    	`json:"first_name"`
 	LastName    string    	`json:"last_name"`
     Birthday    time.Time   `json:"birth_day"`
-	EMAIL      	string    	`json:"email"`
-	PHONE      	string      `json:"phone"`
+	Email      	string    	`json:"email"`
+	Phone      	string      `json:"phone"`
 	CreatedAt 	time.Time 	`json:"created_at"`
 	UpdatedAt 	time.Time 	`json:"updated_at"`
 }
@@ -38,14 +38,14 @@ type Hr struct {
 	HrID        int       	`json:"hr_id"`
 	FirstName 	string    	`json:"first_name"`
 	LastName    string    	`json:"last_name"`
-	EMAIL      	string    	`json:"email"`
-	PHONE      	string      `json:"phone"`
+	Email      	string    	`json:"email"`
+	Phone      	string      `json:"phone"`
 	CreatedAt 	time.Time 	`json:"created_at"`
 	UpdatedAt 	time.Time 	`json:"updated_at"`
 }
 
 type Schedule struct {
-	ScheduleId      int       	`json:"hr_id"`
+	ScheduleId      int       	`json:"schedule_id"`
     FirstName 	    string    	`json:"first_name"`
 	LastName        string    	`json:"last_name"`
     TimeS           time.Time 	`json:"time_s"`
@@ -58,6 +58,14 @@ type Appuser struct {
     Role        string      `json:"role"`
     IsLogin     bool        `json:"islogin"`
 	CreatedAt 	time.Time 	`json:"created_at"`
+}
+
+type Blacklist struct {
+    FirstName 	    string    	`json:"first_name"`
+	LastName        string    	`json:"last_name"`
+    Birthday        time.Time   `json:"birth_day"`
+    Email      	    string    	`json:"email"`
+    History         string    	`json:"history"`
 }
 
 func getEnv(key, defaultValue string) string{
@@ -115,7 +123,7 @@ func getAllApplicants(c *gin.Context) {
     var applicants []Applicant
     for rows.Next() {
         var applicant Applicant
-        err := rows.Scan(&applicant.ApplicantID, &applicant.FirstName, &applicant.LastName, &applicant.Birthday, &applicant.EMAIL, &applicant.PHONE, &applicant.CreatedAt)
+        err := rows.Scan(&applicant.ApplicantID, &applicant.FirstName, &applicant.LastName, &applicant.Birthday, &applicant.Email, &applicant.Phone, &applicant.CreatedAt)
         if err != nil {
         }
         applicants = append(applicants, applicant)
@@ -181,8 +189,8 @@ func getApplicant(c *gin.Context) {
     id := c.Param("id")
     var applicant Applicant
 
-    err := db.QueryRow("SELECT applicant_id, first_name, last_name, birth_day, email, phone FROM applicants id = $1", id).
-        Scan(&applicant.ApplicantID, &applicant.FirstName, &applicant.LastName, &applicant.Birthday, &applicant.EMAIL, &applicant.PHONE)
+    err := db.QueryRow("SELECT applicant_id, first_name, last_name, birth_day, email, phone FROM applicants WHERE applicant_id = $1", id).
+        Scan(&applicant.ApplicantID, &applicant.FirstName, &applicant.LastName, &applicant.Birthday, &applicant.Email, &applicant.Phone)
 
     if err == sql.ErrNoRows {
         c.JSON(http.StatusNotFound, gin.H{"error": "applicant not found"})
@@ -195,35 +203,6 @@ func getApplicant(c *gin.Context) {
     c.JSON(http.StatusOK, applicant)
 }
 
-func createApplicant(c *gin.Context) {
-    var newApplicant Applicant
-
-    if err := c.ShouldBindJSON(&newApplicant); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
-
-    var id int
-    var createdAt, updatedAt time.Time
-
-    err := db.QueryRow(
-        `INSERT INTO Applicants (first_name, last_name, birth_day, email, phone)
-         VALUES ($1, $2, $3, $4, $5)
-         RETURNING id, created_at, updated_at`,
-        newApplicant.FirstName, newApplicant.LastName, newApplicant.Birthday, newApplicant.EMAIL, newApplicant.PHONE,
-    ).Scan(&id, &createdAt, &updatedAt)
-
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-
-    newApplicant.ApplicantID = id
-    newApplicant.CreatedAt = createdAt
-    newApplicant.UpdatedAt = updatedAt
-
-    c.JSON(http.StatusCreated, newApplicant) // ใช้ 201 Created
-}
 
 func updateApplicant(c *gin.Context) {
     var ID int
@@ -241,8 +220,8 @@ func updateApplicant(c *gin.Context) {
          SET first_name = $1, last_name = $2, birth_day =$3, email = $4, phone = $5
          WHERE id = $6
          RETURNING ID,updated_at`,
-        updateApplicant.FirstName, updateApplicant.LastName, updateApplicant.Birthday, updateApplicant.EMAIL,
-        updateApplicant.PHONE, id,
+        updateApplicant.FirstName, updateApplicant.LastName, updateApplicant.Birthday, updateApplicant.Email,
+        updateApplicant.Phone, id,
     ).Scan(&ID, &updateApplicant)
 
     if err == sql.ErrNoRows {
@@ -277,7 +256,7 @@ func deleteApplicant(c *gin.Context) {
         return
     }
 
-    c.JSON(http.StatusOK, gin.H{"messbirth_day": "Applicant deleted successfully"})
+    c.JSON(http.StatusOK, gin.H{"message": "Applicant deleted successfully"})
 }
 
 
@@ -312,7 +291,7 @@ func getApply(c *gin.Context) {
     id := c.Param("id")
     var apply Apply
 
-    err := db.QueryRow("SELECT apply_id, position, file, stage, applicant_id, created_at FROM apply WHERE id = $1", id).
+    err := db.QueryRow("SELECT apply_id, position, file, stage, applicant_id, created_at FROM apply WHERE apply_id = $1", id).
         Scan(&apply.ApplyID, &apply.Position, &apply.File, &apply.Stage, &apply.ApplicantID, &apply.CreatedAt)
 
     if err == sql.ErrNoRows {
@@ -363,6 +342,62 @@ func updateApply(c *gin.Context) {
 }
 
 
+func createApplicant(c *gin.Context) {
+    var newApplicant Applicant
+
+    if err := c.ShouldBindJSON(&newApplicant); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    var id int
+    var createdAt, updatedAt time.Time
+
+    err := db.QueryRow(
+        `INSERT INTO applicants (first_name, last_name, birth_day, email, phone)
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING applicant_id, created_at, updated_at`,
+        newApplicant.FirstName, newApplicant.LastName, newApplicant.Birthday, newApplicant.Email, newApplicant.Phone,
+    ).Scan(&id, &createdAt, &updatedAt)
+
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    newApplicant.ApplicantID = id
+    newApplicant.CreatedAt = createdAt
+    newApplicant.UpdatedAt = updatedAt
+
+    c.JSON(http.StatusCreated, newApplicant)
+}
+
+func createAppuser(c *gin.Context) {
+    var appUser Appuser
+
+    if err := c.ShouldBindJSON(&appUser); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    var createdAt time.Time
+
+    err := db.QueryRow(
+        `INSERT INTO appuser (email, password, role)
+         VALUES ($1, $2, $3)
+         RETURNING created_at`,
+        appUser.Email, appUser.Password, appUser.Role,
+    ).Scan(&createdAt)
+
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    appUser.CreatedAt = createdAt
+
+    c.JSON(http.StatusCreated, appUser)
+}
+
 
 func createApply(c *gin.Context) {
     var newApply Apply
@@ -373,15 +408,15 @@ func createApply(c *gin.Context) {
     }
 
     // ใช้ RETURNING เพื่อดึงค่าที่ database generate (id, timestamps)
-    var apply_id, applicant_id int
+    var apply_id  int
     var createdAt, updatedAt time.Time
 
     err := db.QueryRow(
-        `INSERT INTO Apply (position, file)
+        `INSERT INTO Apply (position, applicant_id)
          VALUES ($1, $2)
-         RETURNING apply_id, created_at, updated_at, applicant_id`,
-        newApply.Position, newApply.File,
-    ).Scan(&apply_id, &createdAt, &updatedAt, &applicant_id)
+         RETURNING apply_id, created_at, updated_at`,
+        newApply.Position, newApply.ApplicantID,
+    ).Scan(&apply_id, &createdAt, &updatedAt)
 
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -389,7 +424,6 @@ func createApply(c *gin.Context) {
     }
 
     newApply.ApplyID = apply_id
-    newApply.ApplicantID = applicant_id
     newApply.CreatedAt = createdAt
     newApply.UpdatedAt = updatedAt
 
@@ -416,7 +450,37 @@ func deleteApply(c *gin.Context) {
         return
     }
 
-    c.JSON(http.StatusOK, gin.H{"messbirth_day": "Apply deleted successfully"})
+    c.JSON(http.StatusOK, gin.H{"message": "Apply deleted successfully"})
+}
+
+func getVerifyBlacklist(c *gin.Context) {
+    var blacklist Blacklist
+
+    if err := c.ShouldBindJSON(&blacklist); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        fmt.Println("❌ JSON binding error:", err.Error())
+        return
+    }
+
+    var dummy int
+    err := db.QueryRow(
+        "SELECT 1 FROM blacklist WHERE first_name = $1 AND last_name = $2",
+        blacklist.FirstName, blacklist.LastName,
+    ).Scan(&dummy)
+
+    if err == sql.ErrNoRows {
+        // ไม่เจอใน blacklist → ผ่าน
+        c.JSON(http.StatusOK, gin.H{"message": "ผ่าน"})
+        return
+    } else if err != nil {
+        // เกิดข้อผิดพลาดอื่น
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "ไม่สามารถตรวจสอบ blacklist ได้"})
+        fmt.Println("❌ DB error:", err.Error())
+        return
+    }
+
+    // เจอใน blacklist
+    c.JSON(http.StatusForbidden, gin.H{"message": "ถูกบล็อคโดย Blacklist"})
 }
 
 
@@ -425,7 +489,7 @@ func getHr(c *gin.Context) {
     var hr Hr
 
     err := db.QueryRow("SELECT hr_id, first_name, last_name, email, phone FROM hr WHERE hr_id = $1", id).
-        Scan(&hr.HrID, &hr.FirstName, &hr.LastName, &hr.EMAIL, &hr.PHONE)
+        Scan(&hr.HrID, &hr.FirstName, &hr.LastName, &hr.Email, &hr.Phone)
 
     if err == sql.ErrNoRows {
         c.JSON(http.StatusNotFound, gin.H{"error": "hr not found"})
@@ -461,10 +525,10 @@ func main(){
 	r.GET("/health", func(c *gin.Context) {
 		err := db.Ping()
 		if err != nil{
-			c.JSON(http.StatusServiceUnavailable, gin.H{"messbirth_day":"unhealty", "error":err})
+			c.JSON(http.StatusServiceUnavailable, gin.H{"message":"unhealty", "error":err})
 			return
 		}
-		c.JSON(200, gin.H{"messbirth_day": "healthy"})
+		c.JSON(200, gin.H{"message": "healthy"})
 	})
 
 	api := r.Group("/api/v1")
@@ -480,10 +544,11 @@ func main(){
 	 	api.GET("/apply/:id", getApply)
         api.PUT("/upapply/:id", updateApply)
 	 	api.POST("/apply", createApply)
+        api.POST("/appuser", createAppuser)
 	 	api.DELETE("/apply/:id", deleteApply)
-
+        
+        api.POST("/blacklist", getVerifyBlacklist)
         api.GET("/hr/:id", getHr)
-	 }
-
+    }
 	r.Run(":8080")
 }

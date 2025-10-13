@@ -28,6 +28,7 @@ CREATE TABLE blacklist (
     last_name       VARCHAR(255) NOT NULL,
     birth_day       DATE NOT NULL,
     email           VARCHAR(255) NOT NULL UNIQUE,
+    history         varchar(500),
     PRIMARY KEY (first_name, last_name)
 );
 
@@ -36,7 +37,7 @@ CREATE TABLE apply (
     apply_id SERIAL PRIMARY KEY,
     position VARCHAR(100) NOT NULL,
     file BYTEA,
-    stage VARCHAR(50),
+    stage VARCHAR(50) DEFAULT 'สมัครแล้ว',
     applicant_id INT NOT NULL,
     FOREIGN KEY (applicant_id) REFERENCES applicants(applicant_id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -95,9 +96,9 @@ INSERT INTO appuser (email, password, role) VALUES
 
 -- Insert blacklist (แปลงวันที่เป็น ค.ศ.)
 INSERT INTO blacklist (first_name, last_name, birth_day, email) VALUES
-    ('มานี', 'มาแล้ว', '2012-12-20','monnie@gmail.com'),
-    ('นายนาว', 'เล็กจัด', '1962-05-01','nnnn@gmail.com'),
-    ('ใบตาล', 'บ้านใหญ่', '2002-07-04','somchai@gmail.com');
+    ('มานี', 'มาแล้ว', '2012-12-20','mani@gmail.com', 'ขโมย'),
+    ('นายนาว', 'เล็กจัด', '1962-05-01','mainow@gmail.com', 'ขโมย'),
+    ('ใบตาล', 'บ้านใหญ่', '2002-07-04','baito@gmail.com', 'ชนแล้วหนึ');
 
 -- Insert HR
 INSERT INTO hr (first_name, last_name, email, phone) VALUES
