@@ -19,7 +19,7 @@ const Profile_hr_Page = () => {
 
   
         // :small_blue_diamond: ตรวจสอบสถานะ response ก่อน
-        if (!hrRes.ok) throw new Error("Network applicant was not ok");
+        if (!hrRes.ok) throw new Error("Network Hr was not ok");
   
         // :small_blue_diamond: แปลงเป็น JSON พร้อมกัน
         const [hrData] = await Promise.all([
