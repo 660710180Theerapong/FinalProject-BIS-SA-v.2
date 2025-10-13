@@ -27,7 +27,7 @@ const Status_Page = () => {
             phone: hrRes?.applicant?.phone || "",
             email: hrRes?.applicant?.email || "",
             position: hrRes?.application?.position || "ไม่ระบุตำแหน่ง",
-            status: hrRes?.application?.status || "รอการพิจารณา",
+            status: hrRes?.application?.stage || "รอพิจารณา",
             avatar: hrRes?.applicant?.avatar || '/images/carwash/profile.png',
           });    
       } catch (err) {
@@ -86,7 +86,7 @@ const Status_Page = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-purple-400 px-4">
       {/* ข้อความด้านบน อยู่นอก card */}
       <h2 className="text-3xl font-bold mb-6">
-        การสมัคร : {userData.position} {userData.status}
+        การสมัคร : {userData.position}
       </h2>
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-2xl">
         {/* แสดงขั้นตอน */}
