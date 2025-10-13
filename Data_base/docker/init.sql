@@ -95,7 +95,7 @@ INSERT INTO appuser (email, password, role) VALUES
     ('somyain@gmail.com', '456', 'applicant');
 
 -- Insert blacklist (แปลงวันที่เป็น ค.ศ.)
-INSERT INTO blacklist (first_name, last_name, birth_day, email) VALUES
+INSERT INTO blacklist (first_name, last_name, birth_day, email, history) VALUES
     ('มานี', 'มาแล้ว', '2012-12-20','mani@gmail.com', 'ขโมย'),
     ('นายนาว', 'เล็กจัด', '1962-05-01','mainow@gmail.com', 'ขโมย'),
     ('ใบตาล', 'บ้านใหญ่', '2002-07-04','baito@gmail.com', 'ชนแล้วหนึ');

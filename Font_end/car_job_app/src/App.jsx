@@ -29,7 +29,7 @@ import { useAuth } from './contexts/AuthContext'; // 👈 ย้อนขึ้�
 
 
 function ProtectedRoute({ children, role }) {
-  const { auth, setAuth} = useAuth(); // 👉 ดึง auth จาก context
+  const { auth } = useAuth(); // 👉 ดึง auth จาก context
 
 
   if (!auth.isLoggedIn) {

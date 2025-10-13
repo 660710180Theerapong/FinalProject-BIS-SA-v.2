@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from '../../contexts/AuthContext';
 
 const Profile_hr_Page = () => {
   const [userData, setUserData] = useState(null); // สำหรับเก็บข้อมูลผู้ใช้จาก API
   const [loading, setLoading] = useState(true); // สถานะโหลด
   const [error, setError] = useState(null); // เก็บ error ถ้ามี
-
+  const { auth } = useAuth();
+  const email = auth.email
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // :small_blue_diamond: เรียก API ทั้งสองพร้อมกัน
-        const [hrRes] = await Promise.all([
-          fetch("/api/v1/hr/1"),
-        ]);
+      const hrRes = await fetch(`http://localhost:8080/api/v1/hre?email=${encodeURIComponent(email)}`, {
+        method: "GET",
+        headers: {
+        "Content-Type": "application/json",
+      }
+    });
+
   
         // :small_blue_diamond: ตรวจสอบสถานะ response ก่อน
         if (!hrRes.ok) throw new Error("Network applicant was not ok");
@@ -44,7 +49,7 @@ const Profile_hr_Page = () => {
     };
   
     fetchData();
-  }, []);
+  },  [auth.email]);
 
   // ระหว่างโหลดข้อมูล
   if (loading) return <p className="text-center mt-20 text-gray-600">Loading...</p>;

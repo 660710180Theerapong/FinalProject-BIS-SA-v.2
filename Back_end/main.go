@@ -502,6 +502,24 @@ func getHr(c *gin.Context) {
     c.JSON(http.StatusOK, hr)
 }
 
+func getHrbyEmail(c *gin.Context) {
+    email := c.Query("email")
+    var hr Hr
+
+    err := db.QueryRow("SELECT first_name, last_name, email, phone FROM hr WHERE email = $1", email).
+        Scan(&hr.FirstName, &hr.LastName, &hr.Email, &hr.Phone)
+
+    if err == sql.ErrNoRows {
+        c.JSON(http.StatusNotFound, gin.H{"error": "hr not found"})
+        return
+    } else if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, hr)
+}
+
 // @title           Simple API Example
 // @version         1.0
 // @description     This is a simple example of using Gin with Swagger.
@@ -549,6 +567,7 @@ func main(){
         
         api.POST("/blacklist", getVerifyBlacklist)
         api.GET("/hr/:id", getHr)
+        api.GET("/hre", getHrbyEmail)
     }
 	r.Run(":8080")
 }
