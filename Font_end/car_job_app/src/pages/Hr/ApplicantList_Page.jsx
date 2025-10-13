@@ -78,7 +78,7 @@ export default function ApplicantList() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-800 via-pink-600 to-purple-900 p-8 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-purple-400 to-purple-400 p-8 text-white">
       <div className="max-w-5xl mx-auto">
         {/* 🔍 Filter */}
         <div className="flex flex-wrap gap-3 mb-6 bg-gray-900/30 p-4 rounded-2xl">

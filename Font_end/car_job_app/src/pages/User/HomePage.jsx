@@ -4,27 +4,7 @@ import React, { useState } from "react";
 function HomePage() {
   return (
     
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-sky-200 to-white flex flex-col items-center font-sans">
-      
-      <div className="mt-12 bg-white text-black rounded-xl shadow-2xl overflow-hidden w-[90%] max-w-xl">
-        <table className="w-full text-center border-collapse">
-          <thead className="bg-blue-300 text-gray-900">
-            <tr>
-              <th className="py-3 border">ลำดับ</th>
-              <th className="py-3 border">ชื่อ - นามสกุล</th>
-              <th className="py-3 border">เวลาล็อกอิน</th>
-              
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colSpan="3" className="py-6 text-gray-500 border">
-                ยังไม่มีข้อมูลผู้ล็อกอินในขณะนี้
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-300 to-purple-300 flex flex-col items-center font-sans">
 
       {/* โลโก้และชื่อร้าน */}
       <div className="text-center mt-16">

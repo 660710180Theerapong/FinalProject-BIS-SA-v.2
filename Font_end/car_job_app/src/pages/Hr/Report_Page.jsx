@@ -19,7 +19,7 @@ export default function Report_Page() {
   const handlePrint = () => window.print();
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-10 py-12 bg-gradient-to-br from-purple-100 via-purple-200 to-purple-300 text-gray-900 print:bg-white print:text-black">
+    <div className="min-h-screen flex flex-col items-center justify-center px-10 py-12 bg-gradient-to-br from-purple-400 to-purple-400 text-gray-900 print:bg-white print:text-black">
       <style>{`
         @media print {
           @page {
