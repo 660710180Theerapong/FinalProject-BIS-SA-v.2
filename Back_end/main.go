@@ -554,11 +554,11 @@ func main(){
 	r := gin.Default()
     r.Use(cors.New(cors.Config{
        AllowOrigins:     []string{
-        "http://127.0.0.1",       // ถ้า client ใช้แบบไม่มีพอร์ต (80)
-        "http://localhost",       // เช่นกัน
-        "http://127.0.0.1:3000", // ตัวอย่างถ้า client อยู่พอร์ต 3000
+        "http://127.0.0.1",       // 80
+        "http://localhost",       
+        "http://127.0.0.1:3000", // 3000
         "http://localhost:3000",
-        "http://localhost:8080",  // ถ้าจำเป็น (server port)
+        "http://localhost:8080",  // server port    
         "http://127.0.0.1:8080",
     },
         AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
