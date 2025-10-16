@@ -82,7 +82,7 @@ const Navbar_user = () => {
                 }`
               }
             >
-              Logout
+              ออกจากระบบ
             </NavLink>
           </div>
         </div>

@@ -265,7 +265,7 @@ func getAllApply(c *gin.Context) {
     var rows *sql.Rows
     var err error
 
-    rows, err = db.Query("SELECT apply_id, position, file, stage, applicant_id, created_at FROM apply")
+    rows, err = db.Query("SELECT apply_id, position, stage, applicant_id, created_at FROM apply")
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
@@ -275,7 +275,7 @@ func getAllApply(c *gin.Context) {
     var applies []Apply
     for rows.Next() {
         var apply Apply
-        err := rows.Scan(&apply.ApplyID, &apply.Position, &apply.File,&apply.Stage, &apply.ApplicantID, &apply.CreatedAt)
+        err := rows.Scan(&apply.ApplyID, &apply.Position, &apply.Stage, &apply.ApplicantID, &apply.CreatedAt)
         if err != nil {
         }
         applies = append(applies, apply)
@@ -291,8 +291,8 @@ func getApply(c *gin.Context) {
     id := c.Param("id")
     var apply Apply
 
-    err := db.QueryRow("SELECT apply_id, position, file, stage, applicant_id, created_at FROM apply WHERE apply_id = $1", id).
-        Scan(&apply.ApplyID, &apply.Position, &apply.File, &apply.Stage, &apply.ApplicantID, &apply.CreatedAt)
+    err := db.QueryRow("SELECT apply_id, position, stage, applicant_id, created_at FROM apply WHERE apply_id = $1", id).
+        Scan(&apply.ApplyID, &apply.Position, &apply.Stage, &apply.ApplicantID, &apply.CreatedAt)
 
     if err == sql.ErrNoRows {
         c.JSON(http.StatusNotFound, gin.H{"error": "apply not found"})

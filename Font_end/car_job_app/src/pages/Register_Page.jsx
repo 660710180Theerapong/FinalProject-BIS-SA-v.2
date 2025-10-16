@@ -106,6 +106,7 @@ const Register_Page = () => {
       }
 
       const applicantData = await applicantRes.json();
+      console.log(applicantData.applicant_id)
 
       // 4. สมัคร apply (ใบสมัคร)
       const applyRes = await fetch("http://localhost:8080/api/v1/apply", {
@@ -116,6 +117,7 @@ const Register_Page = () => {
         body: JSON.stringify({
           position: form.position,
           applicant_id: applicantData.applicant_id,
+          
         }),
       });
 

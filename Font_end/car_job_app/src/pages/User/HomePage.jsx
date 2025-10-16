@@ -1,11 +1,75 @@
-import React, { useState } from "react";
-
+import React, { useState,useEffect} from "react";
+import { useAuth } from '../../contexts/AuthContext';
 
 function HomePage() {
+    const [userData, setUserData] = useState(null); // สำหรับเก็บข้อมูลผู้ใช้จาก API
+    const [loading, setLoading] = useState(true); // สถานะโหลด
+    const [error, setError] = useState(null); // เก็บ error ถ้ามี
+    const { auth } = useAuth();
+    const email = auth.email
+    useEffect(() => {
+       const fetchData = async () => {
+        try {
+        const res  = await fetch(`http://localhost:8080/api/v1/applicants/profile?email=${encodeURIComponent(email)}`, {
+          method: "GET",
+          headers: {
+          "Content-Type": "application/json",
+        }
+      });
+          const hrRes = await res.json();
+  
+            const firstName = hrRes?.applicant?.first_name || "";
+          const lastName = hrRes?.applicant?.last_name || "";
+          const fullName = (firstName + " " + lastName).trim() || "ไม่ทราบชื่อ";
+  
+            setUserData({
+
+              fullname: fullName,
+              phone: hrRes?.applicant?.phone || "",
+              email: hrRes?.applicant?.email || "",
+              position: hrRes?.application?.position || "ไม่ระบุตำแหน่ง",
+              status: hrRes?.application?.stage || "รอการพิจารณา",
+              avatar: hrRes?.applicant?.avatar || '/images/carwash/profile.png',
+            });    
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+    
+      fetchData();
+    }, [auth.email]);
+  
+    // ระหว่างโหลดข้อมูล
+    if (loading) return <p className="text-center mt-20 text-gray-600">Loading...</p>;
+    if (error) return <p className="text-center mt-20 text-red-600">Error: {error}</p>;
+  
+    // ถ้าไม่มีข้อมูล
+    if (!userData) return <p className="text-center mt-20 text-gray-600">No data available.</p>;
+  
   return (
     
     <div className="min-h-screen bg-gradient-to-br from-purple-300 to-purple-300 flex flex-col items-center font-sans">
-
+       <div className="mt-12 bg-white text-black rounded-xl shadow-2xl overflow-hidden w-[90%] max-w-xl">
+      <h2 className="text-2xl font-bold text-center bg-blue-400 text-white py-3">
+        ตารางนัดสัมภาษณ์
+      </h2>
+      <table className="w-full text-center border-collapse">
+        <thead className="bg-blue-200 text-gray-900">
+          <tr>
+            <th className="py-3 border">ชื่อ - นามสกุล</th>
+            <th className="py-3 border">เวลาสัมภาษณ์</th>
+          </tr>
+        </thead>
+        <tbody>
+            <tr>
+              <td>{userData.fullname}</td>
+              <td>วันที่ 20 ตุลาคม 2568 และเวลา 13.30 น.</td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
       {/* โลโก้และชื่อร้าน */}
       <div className="text-center mt-16">
         <h1 className="text-5xl font-extrabold text-blue-700 mb-3">88 CAR WASH</h1>
