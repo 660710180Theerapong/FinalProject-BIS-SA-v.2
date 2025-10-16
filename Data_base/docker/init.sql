@@ -113,7 +113,7 @@ INSERT INTO applicants (first_name, last_name, birth_day, email, phone) VALUES
 -- Insert Applications
 INSERT INTO apply (position, file, stage, applicant_id) VALUES
     ('พนักงานล้างรถ', decode('U29tZSBkYXRh', 'base64'), 'สมัครแล้ว', 1),
-    ('พนักงานล้างรถ', decode('U29tZSBvdGhlciBkYXRh', 'base64'), 'ผ่านสัมภาษณ์', 2);
+    ('พนักงานบริการ', decode('U29tZSBvdGhlciBkYXRh', 'base64'), 'ผ่านสัมภาษณ์', 2);
 
 -- Insert Schedule
 INSERT INTO schedule (first_name, last_name, time_s, applicant_id) VALUES

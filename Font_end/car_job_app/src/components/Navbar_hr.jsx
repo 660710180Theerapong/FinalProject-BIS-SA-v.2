@@ -84,7 +84,7 @@ const Navbar_hr = () => {
                     }`
                   }
                 >
-              Logout
+              ออกจากระบบ
             </NavLink>
           </div>
         </div>
