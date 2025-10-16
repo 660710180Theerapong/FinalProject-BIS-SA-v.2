@@ -2,6 +2,19 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 export default function ManageApplicant() {
+  const calculateAge = (birthDateString) => {
+    if (!birthDateString) return null;
+    const today = new Date();
+    const birthDate = new Date(birthDateString);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+  
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+  
+    return age;
+  };
   const { id } = useParams(); // apply_id
   const navigate = useNavigate();
 
@@ -109,7 +122,7 @@ export default function ManageApplicant() {
         <p className="text-xl mb-2 font-semibold">
           {applicant.first_name} {applicant.last_name}
         </p>
-        <p>อายุ: {applicant.age}</p>
+        <p>อายุ: {calculateAge(applicant.birth_day)}</p>
         <p>ตำแหน่งที่สมัคร: {apply.position}</p>
 
         {/* 🗒 ผลสัมภาษณ์ */}
