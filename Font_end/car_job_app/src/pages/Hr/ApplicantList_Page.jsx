@@ -2,6 +2,20 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function ApplicantList() {
+  const calculateAge = (birthDateString) => {
+    if (!birthDateString) return null;
+    const today = new Date();
+    const birthDate = new Date(birthDateString);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+  
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+  
+    return age;
+  };
+  
   const navigate = useNavigate();
 
   const [applies, setApplies] = useState([]);
@@ -126,7 +140,7 @@ export default function ApplicantList() {
             onClick={() => navigate(`/manage/${a.apply_id}`)}
           >
             <p className="text-lg font-bold">
-              {index + 1}. {a.applicant?.first_name} {a.applicant?.last_name} อายุ {a.applicant?.age} | {a.position} |{" "}
+            {index + 1}. {a.applicant?.first_name} {a.applicant?.last_name} อายุ {calculateAge(a.applicant?.birth_day)} | {a.position} |{" "}
               <span className="text-pink-400">สถานะ : {a.stage}</span>
             </p>
             <p className="text-gray-300 mt-1 text-sm">

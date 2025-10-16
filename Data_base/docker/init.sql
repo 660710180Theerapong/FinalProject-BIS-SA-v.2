@@ -18,7 +18,7 @@ CREATE TABLE applicants (
     phone           VARCHAR(10) NOT NULL,
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (first_name, last_name) REFERENCES blacklist(first_name, last_name) ON DELETE CASCADE,
+    -- FOREIGN KEY (first_name, last_name) REFERENCES blacklist(first_name, last_name) ON DELETE CASCADE,
     FOREIGN KEY (email) REFERENCES appuser(email) ON DELETE CASCADE
 );
 
